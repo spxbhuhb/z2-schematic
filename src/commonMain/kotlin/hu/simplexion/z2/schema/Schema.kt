@@ -7,7 +7,7 @@ import hu.simplexion.z2.schema.field.TextualSchemaField
 import kotlin.properties.ReadOnlyProperty
 import kotlin.reflect.KProperty
 
-class Schema(
+open class Schema(
     val uuid: UUID<Schema>,
     //val locale: Locale
 ) {
