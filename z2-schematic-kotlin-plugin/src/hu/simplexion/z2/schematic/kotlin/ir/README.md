@@ -48,25 +48,36 @@ val intField by int(min = 5)
 ```
 
 ```text
-PROPERTY name:intField visibility:public modality:FINAL [delegated,val]
-  FIELD PROPERTY_DELEGATE name:intField$delegate type:kotlin.properties.ReadOnlyProperty<foo.bar.Adhoc, kotlin.Int> visibility:private [final]
+PROPERTY name:intField visibility:public modality:FINAL [delegated,var]
+  FIELD PROPERTY_DELEGATE name:intField$delegate type:kotlin.properties.ReadWriteProperty<foo.bar.Adhoc, kotlin.Int> visibility:private [final]
     EXPRESSION_BODY
-      CALL 'public final fun provideDelegate (thisRef: T of hu.simplexion.z2.schematic.runtime.Schematic.FakeDelegateProvider, prop: kotlin.reflect.KProperty<*>): kotlin.properties.ReadOnlyProperty<T of hu.simplexion.z2.schematic.runtime.Schematic.FakeDelegateProvider, V of hu.simplexion.z2.schematic.runtime.Schematic.FakeDelegateProvider> [operator] declared in hu.simplexion.z2.schematic.runtime.Schematic.FakeDelegateProvider' type=kotlin.properties.ReadOnlyProperty<foo.bar.Adhoc, kotlin.Int> origin=null
+      CALL 'public final fun provideDelegate (thisRef: T of hu.simplexion.z2.schematic.runtime.Schematic.FakeDelegateProvider, prop: kotlin.reflect.KProperty<*>): kotlin.properties.ReadWriteProperty<T of hu.simplexion.z2.schematic.runtime.Schematic.FakeDelegateProvider, V of hu.simplexion.z2.schematic.runtime.Schematic.FakeDelegateProvider> [operator] declared in hu.simplexion.z2.schematic.runtime.Schematic.FakeDelegateProvider' type=kotlin.properties.ReadWriteProperty<foo.bar.Adhoc, kotlin.Int> origin=null
         $this: CALL 'public final fun int (default: kotlin.Int, min: kotlin.Int?, max: kotlin.Int?): hu.simplexion.z2.schematic.runtime.Schematic.FakeDelegateProvider<foo.bar.Adhoc, kotlin.Int> [fake_override] declared in foo.bar.Adhoc' type=hu.simplexion.z2.schematic.runtime.Schematic.FakeDelegateProvider<foo.bar.Adhoc, kotlin.Int> origin=null
           $this: GET_VAR '<this>: foo.bar.Adhoc declared in foo.bar.Adhoc' type=foo.bar.Adhoc origin=null
           min: CONST Int type=kotlin.Int value=5
         thisRef: GET_VAR '<this>: foo.bar.Adhoc declared in foo.bar.Adhoc' type=foo.bar.Adhoc origin=null
-        prop: PROPERTY_REFERENCE 'public final intField: kotlin.Int [delegated,val]' field=null getter='public final fun <get-intField> (): kotlin.Int declared in foo.bar.Adhoc' setter=null type=kotlin.reflect.KProperty1<foo.bar.Adhoc, kotlin.Int> origin=PROPERTY_REFERENCE_FOR_DELEGATE
+        prop: PROPERTY_REFERENCE 'public final intField: kotlin.Int [delegated,var]' field=null getter='public final fun <get-intField> (): kotlin.Int declared in foo.bar.Adhoc' setter='public final fun <set-intField> (<set-?>: kotlin.Int): kotlin.Unit declared in foo.bar.Adhoc' type=kotlin.reflect.KMutableProperty1<foo.bar.Adhoc, kotlin.Int> origin=PROPERTY_REFERENCE_FOR_DELEGATE
   FUN DELEGATED_PROPERTY_ACCESSOR name:<get-intField> visibility:public modality:FINAL <> ($this:foo.bar.Adhoc) returnType:kotlin.Int
-    correspondingProperty: PROPERTY name:intField visibility:public modality:FINAL [delegated,val]
+    correspondingProperty: PROPERTY name:intField visibility:public modality:FINAL [delegated,var]
     $this: VALUE_PARAMETER name:<this> type:foo.bar.Adhoc
     BLOCK_BODY
       RETURN type=kotlin.Nothing from='public final fun <get-intField> (): kotlin.Int declared in foo.bar.Adhoc'
-        CALL 'public abstract fun getValue (thisRef: T of kotlin.properties.ReadOnlyProperty, property: kotlin.reflect.KProperty<*>): V of kotlin.properties.ReadOnlyProperty [operator] declared in kotlin.properties.ReadOnlyProperty' type=kotlin.Int origin=null
-          $this: GET_FIELD 'FIELD PROPERTY_DELEGATE name:intField$delegate type:kotlin.properties.ReadOnlyProperty<foo.bar.Adhoc, kotlin.Int> visibility:private [final]' type=kotlin.properties.ReadOnlyProperty<foo.bar.Adhoc, kotlin.Int> origin=null
+        CALL 'public abstract fun getValue (thisRef: T of kotlin.properties.ReadWriteProperty, property: kotlin.reflect.KProperty<*>): V of kotlin.properties.ReadWriteProperty [operator] declared in kotlin.properties.ReadWriteProperty' type=kotlin.Int origin=null
+          $this: GET_FIELD 'FIELD PROPERTY_DELEGATE name:intField$delegate type:kotlin.properties.ReadWriteProperty<foo.bar.Adhoc, kotlin.Int> visibility:private [final]' type=kotlin.properties.ReadWriteProperty<foo.bar.Adhoc, kotlin.Int> origin=null
             receiver: GET_VAR '<this>: foo.bar.Adhoc declared in foo.bar.Adhoc.<get-intField>' type=foo.bar.Adhoc origin=null
           thisRef: GET_VAR '<this>: foo.bar.Adhoc declared in foo.bar.Adhoc.<get-intField>' type=foo.bar.Adhoc origin=null
-          property: PROPERTY_REFERENCE 'public final intField: kotlin.Int [delegated,val]' field=null getter='public final fun <get-intField> (): kotlin.Int declared in foo.bar.Adhoc' setter=null type=kotlin.reflect.KProperty1<foo.bar.Adhoc, kotlin.Int> origin=PROPERTY_REFERENCE_FOR_DELEGATE
+          property: PROPERTY_REFERENCE 'public final intField: kotlin.Int [delegated,var]' field=null getter='public final fun <get-intField> (): kotlin.Int declared in foo.bar.Adhoc' setter='public final fun <set-intField> (<set-?>: kotlin.Int): kotlin.Unit declared in foo.bar.Adhoc' type=kotlin.reflect.KMutableProperty1<foo.bar.Adhoc, kotlin.Int> origin=PROPERTY_REFERENCE_FOR_DELEGATE
+  FUN DELEGATED_PROPERTY_ACCESSOR name:<set-intField> visibility:public modality:FINAL <> ($this:foo.bar.Adhoc, <set-?>:kotlin.Int) returnType:kotlin.Unit
+    correspondingProperty: PROPERTY name:intField visibility:public modality:FINAL [delegated,var]
+    $this: VALUE_PARAMETER name:<this> type:foo.bar.Adhoc
+    VALUE_PARAMETER name:<set-?> index:0 type:kotlin.Int
+    BLOCK_BODY
+      CALL 'public abstract fun setValue (thisRef: T of kotlin.properties.ReadWriteProperty, property: kotlin.reflect.KProperty<*>, value: V of kotlin.properties.ReadWriteProperty): kotlin.Unit [operator] declared in kotlin.properties.ReadWriteProperty' type=kotlin.Unit origin=null
+        $this: GET_FIELD 'FIELD PROPERTY_DELEGATE name:intField$delegate type:kotlin.properties.ReadWriteProperty<foo.bar.Adhoc, kotlin.Int> visibility:private [final]' type=kotlin.properties.ReadWriteProperty<foo.bar.Adhoc, kotlin.Int> origin=null
+          receiver: GET_VAR '<this>: foo.bar.Adhoc declared in foo.bar.Adhoc.<set-intField>' type=foo.bar.Adhoc origin=null
+        thisRef: GET_VAR '<this>: foo.bar.Adhoc declared in foo.bar.Adhoc.<set-intField>' type=foo.bar.Adhoc origin=null
+        property: PROPERTY_REFERENCE 'public final intField: kotlin.Int [delegated,var]' field=null getter='public final fun <get-intField> (): kotlin.Int declared in foo.bar.Adhoc' setter='public final fun <set-intField> (<set-?>: kotlin.Int): kotlin.Unit declared in foo.bar.Adhoc' type=kotlin.reflect.KMutableProperty1<foo.bar.Adhoc, kotlin.Int> origin=PROPERTY_REFERENCE_FOR_DELEGATE
+        value: GET_VAR '<set-?>: kotlin.Int declared in foo.bar.Adhoc.<set-intField>' type=kotlin.Int origin=null
 ```
 
 ### Transformed Code
@@ -179,4 +190,22 @@ PROPERTY name:schematicSchema visibility:public modality:FINAL [val]
       RETURN type=kotlin.Nothing from='public final fun <get-schematicSchema> (): hu.simplexion.z2.schematic.runtime.schema.Schema declared in foo.bar.Adhoc.Companion' 
         GET_FIELD 'FIELD PROPERTY_BACKING_FIELD name:schematicSchema type:hu.simplexion.z2.schematic.runtime.schema.Schema visibility:private [final]' type=hu.simplexion.z2.schematic.runtime.schema.Schema origin=null 
           receiver: GET_VAR '<this>: foo.bar.Adhoc.Companion declared in foo.bar.Adhoc.Companion.<get-schematicSchema>' type=foo.bar.Adhoc.Companion origin=null
+```
+
+
+## Notes
+
+This is the function called to create the delegate for a property.
+The annotation shows which field class should be created for this property.
+
+```text
+FUN FAKE_OVERRIDE name:int visibility:public modality:FINAL <> ($this:hu.simplexion.z2.schematic.runtime.Schematic<T of hu.simplexion.z2.schematic.runtime.Schematic>, default:kotlin.Int, min:kotlin.Int?, max:kotlin.Int?) returnType:hu.simplexion.z2.schematic.runtime.Schematic.FakeDelegateProvider<foo.bar.Adhoc, kotlin.Int> [fake_override]
+  annotations:
+    SchematicDelegate(schemaFieldClass = CLASS_REFERENCE 'CLASS IR_EXTERNAL_DECLARATION_STUB CLASS name:IntSchemaField modality:FINAL visibility:public superTypes:[hu.simplexion.z2.schematic.runtime.schema.SchemaField]' type=kotlin.reflect.KClass<hu.simplexion.z2.schematic.runtime.schema.field.IntSchemaField>)
+  overridden:
+    public final fun int (default: kotlin.Int, min: kotlin.Int?, max: kotlin.Int?): hu.simplexion.z2.schematic.runtime.Schematic.FakeDelegateProvider<T of hu.simplexion.z2.schematic.runtime.Schematic, kotlin.Int> declared in hu.simplexion.z2.schematic.runtime.Schematic
+  $this: VALUE_PARAMETER name:<this> type:hu.simplexion.z2.schematic.runtime.Schematic<T of hu.simplexion.z2.schematic.runtime.Schematic>
+  VALUE_PARAMETER name:default index:0 type:kotlin.Int
+  VALUE_PARAMETER name:min index:1 type:kotlin.Int?
+  VALUE_PARAMETER name:max index:2 type:kotlin.Int?
 ```

@@ -1,7 +1,7 @@
 package hu.simplexion.z2.schematic.runtime
 
 import hu.simplexion.z2.schematic.runtime.schema.Schema
-import kotlin.properties.ReadOnlyProperty
+import hu.simplexion.z2.schematic.runtime.schema.field.IntSchemaField
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
 
@@ -19,10 +19,11 @@ abstract class Schematic<T : Schematic<T>> {
     }
 
     fun schematicChangeInt(field : String, value : Int) {
-
+        schematicValues[field] = value
     }
 
     @Suppress("UNUSED_PARAMETER")
+    @SchematicDelegate(IntSchemaField::class)
     fun int(
         default: Int = 0,
         min: Int? = null,
@@ -48,7 +49,7 @@ abstract class Schematic<T : Schematic<T>> {
     }
 
     class FakeDelegateProvider<T, V> {
-        operator fun provideDelegate(thisRef: T, prop: KProperty<*>): ReadOnlyProperty<T,V> {
+        operator fun provideDelegate(thisRef: T, prop: KProperty<*>): ReadWriteProperty<T,V> {
             return FakeDelegate()
         }
     }

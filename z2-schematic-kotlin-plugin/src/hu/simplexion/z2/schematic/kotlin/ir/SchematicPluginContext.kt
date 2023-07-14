@@ -4,8 +4,10 @@
 package hu.simplexion.z2.schematic.kotlin.ir
 
 import org.jetbrains.kotlin.backend.common.extensions.IrPluginContext
+import org.jetbrains.kotlin.backend.jvm.functionByName
 import org.jetbrains.kotlin.ir.types.IrTypeSystemContextImpl
 import org.jetbrains.kotlin.ir.types.defaultType
+import org.jetbrains.kotlin.ir.util.constructors
 import org.jetbrains.kotlin.name.ClassId
 import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.name.Name
@@ -14,17 +16,23 @@ class SchematicPluginContext(
     val irContext: IrPluginContext,
 ) {
 
-    val schematicClass =
-        checkNotNull(irContext.referenceClass(ClassId(FqName(RUNTIME_PACKAGE), Name.identifier(SCHEMATIC_CLASS)))) {
-            "Missing Schematic. Maybe the gradle dependency on \"hu.simplexion.z2:z2-schematic-runtime\" is missing."
-        }
+    val schematicClass = SCHEMATIC_CLASS.runtimeClass()
 
-    val schemaClass = checkNotNull(irContext.referenceClass(ClassId(FqName(RUNTIME_SCHEMA_PACKAGE), Name.identifier(SCHEMA_CLASS))))
+    val schemaClass = SCHEMA_CLASS.runtimeClass(RUNTIME_SCHEMA_PACKAGE)
 
-    val schemaFieldClass = checkNotNull(irContext.referenceClass(ClassId(FqName(RUNTIME_SCHEMA_PACKAGE), Name.identifier(SCHEMA_FIELD_CLASS))))
+    val schematicDelegateConstructor = SCHEMATIC_DELEGATE_CLASS.runtimeClass().owner.constructors.first()
+
+    val schemaFieldClass = SCHEMA_FIELD_CLASS.runtimeClass(RUNTIME_SCHEMA_PACKAGE)
     val schemaFieldType = schemaFieldClass.defaultType
 
+    val mutableMapGet = irContext.irBuiltIns.mutableMapClass.functionByName("get").owner.symbol
+
     val typeSystem = IrTypeSystemContextImpl(irContext.irBuiltIns)
+
+    fun String.runtimeClass(pkg : String? = null) =
+        checkNotNull(irContext.referenceClass(ClassId(FqName(pkg ?: RUNTIME_PACKAGE), Name.identifier(this)))) {
+            "Missing runtime class. Maybe the gradle dependency on \"hu.simplexion.z2:z2-schematic-runtime\" is missing."
+        }
 
 }
 
