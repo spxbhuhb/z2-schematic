@@ -1,21 +1,35 @@
 package hu.simplexion.z2.schematic.runtime
 
+import hu.simplexion.z2.schematic.runtime.schema.Schema
 import kotlin.properties.ReadOnlyProperty
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
 
-open class Schematic<T : Schematic<T>> {
+abstract class Schematic<T : Schematic<T>> {
 
     val schematicValues = mutableMapOf<String,Any?>()
     val schematicChanges = mutableMapOf<String,SchematicChange>()
     val schematicListeners = mutableListOf<SchematicListener>()
 
+    open val schematicSchema : Schema
+        get() = throw IllegalStateException("Schematic.schematicSchema.get should, most probably the compiler plugin is missing.")
+
+    fun schematicChange(field : String, change : SchematicChange) {
+
+    }
+
+    fun schematicChangeInt(field : String, value : Int) {
+
+    }
+
+    @Suppress("UNUSED_PARAMETER")
     fun int(
         default: Int = 0,
         min: Int? = null,
         max: Int? = null
     ) = FakeDelegateProvider<T,Int>()
 
+    @Suppress("UNUSED_PARAMETER")
     fun string(
         default: String = "",
         minLength: Int? = null,
@@ -26,10 +40,10 @@ open class Schematic<T : Schematic<T>> {
 
     class FakeDelegate<T, V> : ReadWriteProperty<T, V> {
         override fun getValue(thisRef: T, property: KProperty<*>): V {
-            throw IllegalStateException("This delegate should never be called, most probably the compiler plugin is missing.")
+            throw IllegalStateException("Schematic.FakeDelegate.getValue should never be called, most probably the compiler plugin is missing.")
         }
         override fun setValue(thisRef: T, property: KProperty<*>, value : V) {
-            throw IllegalStateException("This delegate should never be called, most probably the compiler plugin is missing.")
+            throw IllegalStateException("Schematic.FakeDelegate.setValue should never be called, most probably the compiler plugin is missing.")
         }
     }
 

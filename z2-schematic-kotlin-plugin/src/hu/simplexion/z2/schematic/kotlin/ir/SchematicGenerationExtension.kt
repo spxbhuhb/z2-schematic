@@ -13,7 +13,7 @@ internal class SchematicGenerationExtension: IrGenerationExtension {
 
         SchematicPluginContext(pluginContext).apply {
 
-            moduleFragment.accept(SchematicTransform(this), null)
+            moduleFragment.accept(SchematicModuleTransform(this), null)
 
         }
     }
