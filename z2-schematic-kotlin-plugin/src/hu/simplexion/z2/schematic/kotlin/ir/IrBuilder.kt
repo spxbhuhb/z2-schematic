@@ -64,7 +64,7 @@ interface IrBuilder {
 
         val irProperty = irClass.addProperty {
             name = inName
-            isVar = true
+            isVar = inIsVar
         }.apply {
             parent = irClass
             backingField = irField

@@ -12,7 +12,19 @@ class Adhoc : Schematic<Adhoc>() {
 
 fun box(): String {
     val test = Adhoc()
+
+    val schema = test.schematicSchema
+    val field = schema.fields[0]
+    if (field !is IntSchemaField) return "Fail: not IntSchemaField"
+
+    if (field.name != "intField") return "Fail: wrong field name"
+    if (field.default != 0) return "Fail: wrong field default"
+    if (field.min != 5) return "Fail: wrong field min"
+    if (field.max != null) return "Fail: wrong field max"
+
     test.intField = 11
-    if (test.schematicValues["intField"] != 11) return "Fail"
-    return if (test.intField == 11) "OK" else "Fail"
+    if (test.schematicValues["intField"] != 11) return "Fail: not in schematicValues"
+
+    return if (test.intField == 11) "OK" else "Fail: wrong value by field access"
+    return "OK"
 }

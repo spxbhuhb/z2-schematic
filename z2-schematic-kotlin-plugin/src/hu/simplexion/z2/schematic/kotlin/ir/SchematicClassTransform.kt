@@ -31,6 +31,7 @@ class SchematicClassTransform(
     lateinit var transformedClass: IrClass
     lateinit var schematicValuesGetter: IrFunctionSymbol
     lateinit var companionClass: IrClass
+    lateinit var companionSchematicSchemaGetter : IrFunctionSymbol
     lateinit var schemaFieldsArg: IrVarargImpl
 
     override fun visitClassNew(declaration: IrClass): IrStatement {
@@ -50,6 +51,7 @@ class SchematicClassTransform(
             buildSchemaInitializer()
         ).also {
             it.modality = Modality.FINAL
+            companionSchematicSchemaGetter = it.getter!!.symbol
         }
 
         super.visitClassNew(declaration)
@@ -79,7 +81,15 @@ class SchematicClassTransform(
     }
 
     override fun visitPropertyNew(declaration: IrProperty): IrStatement {
-        if (!declaration.isDelegated) return declaration
+
+        if (declaration.name.identifier == SCHEMATIC_SCHEMA_PROPERTY) {
+            return declaration.accept(SchematicSchemaPropertyTransform(pluginContext, this), null) as IrStatement
+        }
+
+        if (!declaration.isDelegated) {
+            return declaration
+        }
+
         val backingField = declaration.backingField ?: return declaration
 
         // TODO checks and feedbacks in visitPropertyNew (non-schematic delegate?)
