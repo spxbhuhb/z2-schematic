@@ -13,5 +13,6 @@ class Adhoc : Schematic<Adhoc>() {
 fun box(): String {
     val test = Adhoc()
     test.intField = 11
+    if (test.schematicValues["intField"] != 11) return "Fail"
     return if (test.intField == 11) "OK" else "Fail"
 }

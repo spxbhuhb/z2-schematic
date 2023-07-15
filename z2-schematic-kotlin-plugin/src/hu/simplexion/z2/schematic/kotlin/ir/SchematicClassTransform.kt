@@ -5,23 +5,24 @@ package hu.simplexion.z2.schematic.kotlin.ir
 
 import org.jetbrains.kotlin.backend.common.IrElementTransformerVoidWithContext
 import org.jetbrains.kotlin.backend.jvm.ir.receiverAndArgs
+import org.jetbrains.kotlin.descriptors.Modality
 import org.jetbrains.kotlin.ir.IrStatement
+import org.jetbrains.kotlin.ir.backend.js.utils.valueArguments
 import org.jetbrains.kotlin.ir.declarations.IrClass
 import org.jetbrains.kotlin.ir.declarations.IrProperty
-import org.jetbrains.kotlin.ir.declarations.IrSimpleFunction
-import org.jetbrains.kotlin.ir.expressions.IrCall
-import org.jetbrains.kotlin.ir.expressions.IrClassReference
-import org.jetbrains.kotlin.ir.expressions.IrExpression
+import org.jetbrains.kotlin.ir.expressions.*
 import org.jetbrains.kotlin.ir.expressions.impl.IrConstructorCallImpl
 import org.jetbrains.kotlin.ir.expressions.impl.IrVarargImpl
 import org.jetbrains.kotlin.ir.symbols.IrFunctionSymbol
 import org.jetbrains.kotlin.ir.types.IrType
 import org.jetbrains.kotlin.ir.types.defaultType
+import org.jetbrains.kotlin.ir.types.getClass
 import org.jetbrains.kotlin.ir.types.typeWith
 import org.jetbrains.kotlin.ir.util.SYNTHETIC_OFFSET
 import org.jetbrains.kotlin.ir.util.defaultType
 import org.jetbrains.kotlin.ir.util.getPropertyGetter
 import org.jetbrains.kotlin.ir.util.primaryConstructor
+import org.jetbrains.kotlin.name.Name
 
 class SchematicClassTransform(
     override val pluginContext: SchematicPluginContext
@@ -41,15 +42,17 @@ class SchematicClassTransform(
         transformedClass = declaration
         schematicValuesGetter = checkNotNull(declaration.getPropertyGetter(SCHEMATIC_VALUES_PROPERTY)) { "missing $SCHEMATIC_VALUES_PROPERTY getter " }
 
-        super.visitClassNew(declaration)
-
         companionClass = declaration.addCompanionIfMissing()
-//        companionClass.addIrProperty(
-//            Name.identifier(SCHEMATIC_SCHEMA_PROPERTY),
-//            pluginContext.schemaClass.defaultType,
-//            inIsVar = false,
-//            buildSchemaInitializer()
-//        )
+        companionClass.addIrProperty(
+            Name.identifier(SCHEMATIC_SCHEMA_PROPERTY),
+            pluginContext.schemaClass.defaultType,
+            inIsVar = false,
+            buildSchemaInitializer()
+        ).also {
+            it.modality = Modality.FINAL
+        }
+
+        super.visitClassNew(declaration)
 
         return declaration
     }
@@ -98,12 +101,30 @@ class SchematicClassTransform(
         val fieldClassExpression = delegateFunAnnotation.getValueArgument(DELEGATE_ANNOTATION_FIELD_CLASS_INDEX)
         if (fieldClassExpression !is IrClassReference) return declaration
 
-        addSchemaField(delegateFun, fieldClassExpression.classType)
+        schemaFieldsArg.addElement(
+            buildSchemaField(
+                declaration.name.identifier,
+                delegateFunCall.valueArguments,
+                fieldClassExpression.classType
+            )
+        )
 
         return declaration.accept(SchematicPropertyTransform(pluginContext, this), null) as IrStatement
     }
 
-    fun addSchemaField(delegateFun: IrSimpleFunction, fieldClassType: IrType) {
-        // TODO add element to the schemaFieldArgs
-    }
+    fun buildSchemaField(fieldName: String, valueArguments: List<IrExpression?>, classType: IrType): IrVarargElement =
+        IrConstructorCallImpl(
+            SYNTHETIC_OFFSET, SYNTHETIC_OFFSET,
+            classType,
+            classType.getClass()!!.primaryConstructor!!.symbol, // this class is from the annotation, it should be there
+            0, 0,
+            1 + valueArguments.size // +1 = field name
+        ).also { constructorCall ->
+            constructorCall.putValueArgument(FIELD_CONSTRUCTOR_NAME_INDEX, irConst(fieldName))
+            // TODO add a parameter name and type match check to SchemaField builder, should cache it probably
+            for (i in valueArguments.indices) {
+                constructorCall.putValueArgument(FIELD_CONSTRUCTOR_VARARG_INDEX + i, valueArguments[i])
+            }
+        }
+
 }

@@ -5,9 +5,9 @@ import hu.simplexion.z2.schematic.runtime.schema.SchemaFieldType
 
 class IntSchemaField(
     override val name: String,
-    val default: Int,
-    val min: Int?,
-    val max: Int?,
+    val default: Int = 0,
+    val min: Int? = null,
+    val max: Int? = null,
 ) : SchemaField {
 
     override val type: SchemaFieldType

@@ -14,6 +14,9 @@ const val DELEGATE_ANNOTATION_FIELD_CLASS_INDEX = 0
 const val SCHEMA_CHANGE_FIELD_INDEX = 0
 const val SCHEMA_CHANGE_VALUE_INDEX = 1
 
+const val FIELD_CONSTRUCTOR_NAME_INDEX = 0
+const val FIELD_CONSTRUCTOR_VARARG_INDEX = 1
+
 const val RUNTIME_SCHEMA_PACKAGE = "hu.simplexion.z2.schematic.runtime.schema"
 const val SCHEMA_CLASS = "Schema"
 const val SCHEMA_FIELD_CLASS = "SchemaField"

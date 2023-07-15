@@ -176,19 +176,20 @@ val schematicSchema = Schema(
 
 ```text
 PROPERTY name:schematicSchema visibility:public modality:FINAL [val]
-  FIELD PROPERTY_BACKING_FIELD name:schematicSchema type:hu.simplexion.z2.schematic.runtime.schema.Schema visibility:private [final] 
-    EXPRESSION_BODY 
-      CONSTRUCTOR_CALL 'public constructor <init> (vararg fields: kotlin.Array<hu.simplexion.z2.schematic.runtime.schema.SchemaField>) [primary] declared in hu.simplexion.z2.schematic.runtime.schema.Schema' type=hu.simplexion.z2.schematic.runtime.schema.Schema origin=null 
-        fields: CONSTRUCTOR_CALL 'public constructor <init> (name: kotlin.String, min: kotlin.Int?, max: kotlin.Int?) [primary] declared in hu.simplexion.z2.schematic.runtime.schema.field.IntSchemaField' type=hu.simplexion.z2.schematic.runtime.schema.field.IntSchemaField origin=null 
-          name: CONST String type=kotlin.String value="intField" 
-          min: CONST Int type=kotlin.Int value=5 
-          max: CONST Null type=kotlin.Nothing? value=null 
-  FUN DEFAULT_PROPERTY_ACCESSOR name:<get-schematicSchema> visibility:public modality:FINAL <> ($this:foo.bar.Adhoc.Companion) returnType:hu.simplexion.z2.schematic.runtime.schema.Schema 
-    correspondingProperty: PROPERTY name:schematicSchema visibility:public modality:FINAL [val] 
-    $this: VALUE_PARAMETER name:<this> type:foo.bar.Adhoc.Companion 
-    BLOCK_BODY 
-      RETURN type=kotlin.Nothing from='public final fun <get-schematicSchema> (): hu.simplexion.z2.schematic.runtime.schema.Schema declared in foo.bar.Adhoc.Companion' 
-        GET_FIELD 'FIELD PROPERTY_BACKING_FIELD name:schematicSchema type:hu.simplexion.z2.schematic.runtime.schema.Schema visibility:private [final]' type=hu.simplexion.z2.schematic.runtime.schema.Schema origin=null 
+  FIELD PROPERTY_BACKING_FIELD name:schematicSchema type:hu.simplexion.z2.schematic.runtime.schema.Schema visibility:private [final]
+    EXPRESSION_BODY
+      CONSTRUCTOR_CALL 'public constructor <init> (vararg fields: hu.simplexion.z2.schematic.runtime.schema.SchemaField) [primary] declared in hu.simplexion.z2.schematic.runtime.schema.Schema' type=hu.simplexion.z2.schematic.runtime.schema.Schema origin=null
+        fields: VARARG type=kotlin.Array<out hu.simplexion.z2.schematic.runtime.schema.SchemaField> varargElementType=hu.simplexion.z2.schematic.runtime.schema.SchemaField
+          CONSTRUCTOR_CALL 'public constructor <init> (name: kotlin.String, default: kotlin.Int, min: kotlin.Int?, max: kotlin.Int?) [primary] declared in hu.simplexion.z2.schematic.runtime.schema.field.IntSchemaField' type=hu.simplexion.z2.schematic.runtime.schema.field.IntSchemaField origin=null
+            name: CONST String type=kotlin.String value="intField"
+            default: CONST Int type=kotlin.Int value=5
+            min: CONST Null type=kotlin.Nothing? value=null
+  FUN DEFAULT_PROPERTY_ACCESSOR name:<get-schematicSchema> visibility:public modality:FINAL <> ($this:foo.bar.Adhoc.Companion) returnType:hu.simplexion.z2.schematic.runtime.schema.Schema
+    correspondingProperty: PROPERTY name:schematicSchema visibility:public modality:FINAL [val]
+    $this: VALUE_PARAMETER name:<this> type:foo.bar.Adhoc.Companion
+    BLOCK_BODY
+      RETURN type=kotlin.Nothing from='public final fun <get-schematicSchema> (): hu.simplexion.z2.schematic.runtime.schema.Schema declared in foo.bar.Adhoc.Companion'
+        GET_FIELD 'FIELD PROPERTY_BACKING_FIELD name:schematicSchema type:hu.simplexion.z2.schematic.runtime.schema.Schema visibility:private [final]' type=hu.simplexion.z2.schematic.runtime.schema.Schema origin=null
           receiver: GET_VAR '<this>: foo.bar.Adhoc.Companion declared in foo.bar.Adhoc.Companion.<get-schematicSchema>' type=foo.bar.Adhoc.Companion origin=null
 ```
 
