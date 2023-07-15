@@ -23,12 +23,12 @@ abstract class Schematic<T : Schematic<T>> {
     }
 
     @Suppress("UNUSED_PARAMETER")
-    @SchematicDelegate(IntSchemaField::class)
+    @FieldDefinitionFunction(IntSchemaField::class)
     fun int(
         default: Int = 0,
         min: Int? = null,
         max: Int? = null
-    ) = FakeDelegateProvider<T,Int>()
+    ) = SchematicDelegateProvider<T,Int>()
 
     @Suppress("UNUSED_PARAMETER")
     fun string(
@@ -37,7 +37,7 @@ abstract class Schematic<T : Schematic<T>> {
         maxLength: Int? = null,
         blank : Boolean? = null,
         pattern : String? = null
-    ) = FakeDelegateProvider<T,String>()
+    ) = SchematicDelegateProvider<T,String>()
 
     class FakeDelegate<T, V> : ReadWriteProperty<T, V> {
         override fun getValue(thisRef: T, property: KProperty<*>): V {
@@ -48,7 +48,7 @@ abstract class Schematic<T : Schematic<T>> {
         }
     }
 
-    class FakeDelegateProvider<T, V> {
+    class SchematicDelegateProvider<T, V> {
         operator fun provideDelegate(thisRef: T, prop: KProperty<*>): ReadWriteProperty<T,V> {
             return FakeDelegate()
         }

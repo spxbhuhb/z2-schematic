@@ -51,8 +51,8 @@ val intField by int(min = 5)
 PROPERTY name:intField visibility:public modality:FINAL [delegated,var]
   FIELD PROPERTY_DELEGATE name:intField$delegate type:kotlin.properties.ReadWriteProperty<foo.bar.Adhoc, kotlin.Int> visibility:private [final]
     EXPRESSION_BODY
-      CALL 'public final fun provideDelegate (thisRef: T of hu.simplexion.z2.schematic.runtime.Schematic.FakeDelegateProvider, prop: kotlin.reflect.KProperty<*>): kotlin.properties.ReadWriteProperty<T of hu.simplexion.z2.schematic.runtime.Schematic.FakeDelegateProvider, V of hu.simplexion.z2.schematic.runtime.Schematic.FakeDelegateProvider> [operator] declared in hu.simplexion.z2.schematic.runtime.Schematic.FakeDelegateProvider' type=kotlin.properties.ReadWriteProperty<foo.bar.Adhoc, kotlin.Int> origin=null
-        $this: CALL 'public final fun int (default: kotlin.Int, min: kotlin.Int?, max: kotlin.Int?): hu.simplexion.z2.schematic.runtime.Schematic.FakeDelegateProvider<foo.bar.Adhoc, kotlin.Int> [fake_override] declared in foo.bar.Adhoc' type=hu.simplexion.z2.schematic.runtime.Schematic.FakeDelegateProvider<foo.bar.Adhoc, kotlin.Int> origin=null
+      CALL 'public final fun provideDelegate (thisRef: T of hu.simplexion.z2.schematic.runtime.Schematic.SchematicDelegateProvider, prop: kotlin.reflect.KProperty<*>): kotlin.properties.ReadWriteProperty<T of hu.simplexion.z2.schematic.runtime.Schematic.SchematicDelegateProvider, V of hu.simplexion.z2.schematic.runtime.Schematic.SchematicDelegateProvider> [operator] declared in hu.simplexion.z2.schematic.runtime.Schematic.SchematicDelegateProvider' type=kotlin.properties.ReadWriteProperty<foo.bar.Adhoc, kotlin.Int> origin=null
+        $this: CALL 'public final fun int (default: kotlin.Int, min: kotlin.Int?, max: kotlin.Int?): hu.simplexion.z2.schematic.runtime.Schematic.SchematicDelegateProvider<foo.bar.Adhoc, kotlin.Int> [fake_override] declared in foo.bar.Adhoc' type=hu.simplexion.z2.schematic.runtime.Schematic.SchematicDelegateProvider<foo.bar.Adhoc, kotlin.Int> origin=null
           $this: GET_VAR '<this>: foo.bar.Adhoc declared in foo.bar.Adhoc' type=foo.bar.Adhoc origin=null
           min: CONST Int type=kotlin.Int value=5
         thisRef: GET_VAR '<this>: foo.bar.Adhoc declared in foo.bar.Adhoc' type=foo.bar.Adhoc origin=null
@@ -200,11 +200,11 @@ This is the function called to create the delegate for a property.
 The annotation shows which field class should be created for this property.
 
 ```text
-FUN FAKE_OVERRIDE name:int visibility:public modality:FINAL <> ($this:hu.simplexion.z2.schematic.runtime.Schematic<T of hu.simplexion.z2.schematic.runtime.Schematic>, default:kotlin.Int, min:kotlin.Int?, max:kotlin.Int?) returnType:hu.simplexion.z2.schematic.runtime.Schematic.FakeDelegateProvider<foo.bar.Adhoc, kotlin.Int> [fake_override]
+FUN FAKE_OVERRIDE name:int visibility:public modality:FINAL <> ($this:hu.simplexion.z2.schematic.runtime.Schematic<T of hu.simplexion.z2.schematic.runtime.Schematic>, default:kotlin.Int, min:kotlin.Int?, max:kotlin.Int?) returnType:hu.simplexion.z2.schematic.runtime.Schematic.SchematicDelegateProvider<foo.bar.Adhoc, kotlin.Int> [fake_override]
   annotations:
     SchematicDelegate(schemaFieldClass = CLASS_REFERENCE 'CLASS IR_EXTERNAL_DECLARATION_STUB CLASS name:IntSchemaField modality:FINAL visibility:public superTypes:[hu.simplexion.z2.schematic.runtime.schema.SchemaField]' type=kotlin.reflect.KClass<hu.simplexion.z2.schematic.runtime.schema.field.IntSchemaField>)
   overridden:
-    public final fun int (default: kotlin.Int, min: kotlin.Int?, max: kotlin.Int?): hu.simplexion.z2.schematic.runtime.Schematic.FakeDelegateProvider<T of hu.simplexion.z2.schematic.runtime.Schematic, kotlin.Int> declared in hu.simplexion.z2.schematic.runtime.Schematic
+    public final fun int (default: kotlin.Int, min: kotlin.Int?, max: kotlin.Int?): hu.simplexion.z2.schematic.runtime.Schematic.SchematicDelegateProvider<T of hu.simplexion.z2.schematic.runtime.Schematic, kotlin.Int> declared in hu.simplexion.z2.schematic.runtime.Schematic
   $this: VALUE_PARAMETER name:<this> type:hu.simplexion.z2.schematic.runtime.Schematic<T of hu.simplexion.z2.schematic.runtime.Schematic>
   VALUE_PARAMETER name:default index:0 type:kotlin.Int
   VALUE_PARAMETER name:min index:1 type:kotlin.Int?

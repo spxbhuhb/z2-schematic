@@ -5,6 +5,6 @@ import kotlin.reflect.KClass
 
 @Retention(AnnotationRetention.BINARY)
 @Target(AnnotationTarget.FUNCTION)
-annotation class SchematicDelegate(
+annotation class FieldDefinitionFunction(
     val schemaFieldClass : KClass<out SchemaField>
 )
