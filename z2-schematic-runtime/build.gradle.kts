@@ -1,3 +1,5 @@
+import java.net.URI
+
 /*
  * Copyright © 2020-2023, Simplexion, Hungary and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
@@ -8,7 +10,8 @@ plugins {
 }
 
 group = "hu.simplexion.z2"
-version = "2023.7.14-SNAPSHOT"
+
+val z2_commons_version: String by project
 
 val baseName = "z2-schematic-runtime"
 val pomName = "Z2 Schematic Runtime"
@@ -18,6 +21,9 @@ repositories {
     mavenLocal()
     google()
     mavenCentral()
+    maven {
+        url = URI("https://s01.oss.sonatype.org/content/repositories/snapshots/")
+    }
 }
 
 kotlin {
@@ -32,12 +38,19 @@ kotlin {
         binaries.library()
     }
 
+    sourceSets {
+        commonMain {
+            dependencies {
+                api("hu.simplexion.z2:z2-commons:${z2_commons_version}")
+            }
+        }
+    }
 }
 
 // ----  Publishing ----
 
 val String.propValue
-    get() = (System.getenv(this.toUpperCase().replace('.', '_')) ?: project.findProperty(this))?.toString() ?: ""
+    get() = (System.getenv(this.uppercase().replace('.', '_')) ?: project.findProperty(this))?.toString() ?: ""
 
 val isPublishing = "z2.publish".propValue
 val publishSnapshotUrl = "z2.publish.snapshot.url".propValue

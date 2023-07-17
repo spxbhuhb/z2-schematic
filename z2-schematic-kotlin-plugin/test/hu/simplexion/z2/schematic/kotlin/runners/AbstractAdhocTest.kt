@@ -41,7 +41,7 @@ open class AbstractAdhocTest : BaseTestRunner(), RunnerWithTargetBackendForTestG
             dependencyKind = DependencyKind.Binary
         }
 
-        useCustomRuntimeClasspathProviders(AbstractAdhocTest::CounterRuntimeClassPathProvider)
+        useCustomRuntimeClasspathProviders(AbstractAdhocTest::SchematicRuntimeClassPathProvider)
 
         configureFirParser(FirParser.Psi)
 
@@ -66,10 +66,7 @@ open class AbstractAdhocTest : BaseTestRunner(), RunnerWithTargetBackendForTestG
         useAfterAnalysisCheckers(::BlackBoxCodegenSuppressor)
     }
 
-    class CounterRuntimeClassPathProvider(testServices: TestServices) : RuntimeClasspathProvider(testServices) {
-        override fun runtimeClassPaths(module: TestModule): List<File> {
-            // FIXME hard coded jar name
-            return listOf(File("../z2-schematic-runtime/build/libs/z2-schematic-runtime-jvm-2023.7.14-SNAPSHOT.jar"))
-        }
+    class SchematicRuntimeClassPathProvider(testServices: TestServices) : RuntimeClasspathProvider(testServices) {
+        override fun runtimeClassPaths(module: TestModule): List<File> = runtimeClassPath()
     }
 }

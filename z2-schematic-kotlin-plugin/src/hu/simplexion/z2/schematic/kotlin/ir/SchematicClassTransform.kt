@@ -128,9 +128,11 @@ class SchematicClassTransform(
             classType,
             classType.getClass()!!.primaryConstructor!!.symbol, // this class is from the annotation, it should be there
             0, 0,
-            1 + valueArguments.size // +1 = field name
+            2 + valueArguments.size // +2 = field name + nullable
         ).also { constructorCall ->
             constructorCall.putValueArgument(FIELD_CONSTRUCTOR_NAME_INDEX, irConst(fieldName))
+            constructorCall.putValueArgument(FIELD_CONSTRUCTOR_NULLABLE_INDEX, irConst(false))
+
             // TODO add a parameter name and type match check to SchemaField builder, should cache it probably
             for (i in valueArguments.indices) {
                 constructorCall.putValueArgument(FIELD_CONSTRUCTOR_VARARG_INDEX + i, valueArguments[i])

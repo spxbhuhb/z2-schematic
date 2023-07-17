@@ -1,4 +1,4 @@
-# Z2 Schema
+# Z2 Schematic
 
 [![Maven Central](https://img.shields.io/maven-central/v/hu.simplexion.z2/z2-rpc)](https://mvnrepository.com/artifact/hu.simplexion.z2/z2-schema)
 [![GitHub License](https://img.shields.io/badge/license-Apache%20License%202.0-blue.svg?style=flat)](http://www.apache.org/licenses/LICENSE-2.0)
@@ -50,6 +50,13 @@ When you have a schematic class, you can:
 * apply the changes to another instance of the class with the `schematicPatch` function
 * add event listeners which are called whenever a field changes
 * validate the data with the `Schema` of the class
+
+All fields are initialized to their "natural" default values. If you want a different
+value use the `default` parameter.
+
+  * int = 0
+  * string = ""
+  * nullable fields = null
 
 ### Schemas
 
@@ -124,7 +131,7 @@ fun editor(context : SchematicContext = SchematicContext.NONE, accessor : () -> 
 ### Schematic Classes
 
 To define a schematic class, extend `Schematic` and use the provided field definition functions. You may find the [list
-of available functions](#Field-Definition-Functions) below or [define your own](#Defining-Field-Definition-Functions).
+of available functions](#field-definition-functions) below or [define your own](#writing-field-definition-functions).
 
 ```kotlin
 class Test : Schematic<Test>() {
@@ -154,10 +161,16 @@ class Test : Schematic<Test> {
 }
 ```
 
-The schema is independent of the data instances, but any given instance can access it's own schema through the
+The schema is independent of the data instances, but any given instance can access its own schema through the
 `schematicSchema` property.
 
 ### Field Definition Functions
+
+```kotlin
+fun boolean(
+    default: Boolean = false
+)
+```
 
 ```kotlin
 fun int(
@@ -192,7 +205,7 @@ fun int(
     default: Int = 0,
     min: Int? = null,
     max: Int? = null
-) = SchematicDelegateProvider<T,Int>()
+) = PlaceholderDelegateProvider<T,Int>()
 ```
 
 ```kotlin
@@ -206,5 +219,23 @@ class IntSchemaField(
     override val type: SchemaFieldType
         get() = SchemaFieldType.Int
 
+   override fun toTypedValue(anyValue: Any?, fails: MutableList<ValidationFailInfo>): Int? {
+      if (anyValue == null) return null
+
+      return when (anyValue) {
+         is Int -> anyValue
+         is Number -> anyValue.toInt()
+         is String -> anyValue.toIntOrNull()
+         else -> {
+            fails += fail(validationStrings.integerFail)
+            null
+         }
+      }
+   }
+
+   override fun validateNotNullable(value: Int, fails: MutableList<ValidationFailInfo>) {
+      if (min != null && value < min) fails += fail(validationStrings.minValueFail, min)
+      if (max != null && value > max) fails += fail(validationStrings.maxValueFail, max)
+   }
 }
 ```

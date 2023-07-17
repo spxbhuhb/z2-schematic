@@ -6,5 +6,5 @@ import kotlin.reflect.KClass
 @Retention(AnnotationRetention.BINARY)
 @Target(AnnotationTarget.FUNCTION)
 annotation class FieldDefinitionFunction(
-    val schemaFieldClass : KClass<out SchemaField>
+    val schemaFieldClass : KClass<out SchemaField<*>>
 )

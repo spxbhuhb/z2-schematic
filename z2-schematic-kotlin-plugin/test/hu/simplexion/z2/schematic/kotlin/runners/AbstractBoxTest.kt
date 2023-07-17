@@ -41,12 +41,12 @@ open class AbstractBoxTest : BaseTestRunner(), RunnerWithTargetBackendForTestGen
             dependencyKind = DependencyKind.Binary
         }
 
-        useCustomRuntimeClasspathProviders(AbstractBoxTest::CounterRuntimeClassPathProvider)
+        useCustomRuntimeClasspathProviders(AbstractBoxTest::SchematicRuntimeClassPathProvider)
 
         configureFirParser(FirParser.Psi)
 
         defaultDirectives {
-            + DUMP_IR
+            +DUMP_IR
         }
 
         commonFirWithPluginFrontendConfiguration()
@@ -66,10 +66,7 @@ open class AbstractBoxTest : BaseTestRunner(), RunnerWithTargetBackendForTestGen
         useAfterAnalysisCheckers(::BlackBoxCodegenSuppressor)
     }
 
-    class CounterRuntimeClassPathProvider(testServices: TestServices) : RuntimeClasspathProvider(testServices) {
-        override fun runtimeClassPaths(module: TestModule): List<File> {
-            // FIXME hard coded jar name
-            return listOf(File("../z2-schematic-runtime/build/libs/z2-schematic-runtime-jvm-2023.7.14-SNAPSHOT.jar"))
-        }
+    class SchematicRuntimeClassPathProvider(testServices: TestServices) : RuntimeClasspathProvider(testServices) {
+        override fun runtimeClassPaths(module: TestModule): List<File> = runtimeClassPath()
     }
 }
