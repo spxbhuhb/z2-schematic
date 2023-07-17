@@ -9,7 +9,7 @@ import hu.simplexion.z2.schematic.runtime.schema.validation.validationStrings
 class StringSchemaField(
     override val name: String,
     override val nullable: Boolean = false,
-    override val default: String = "",
+    override val definitionDefault: String?,
     val minLength: Int?,
     val maxLength: Int?,
     val blank : Boolean?,
@@ -18,6 +18,8 @@ class StringSchemaField(
 
     override val type: SchemaFieldType
         get() = SchemaFieldType.String
+
+    override val naturalDefault = ""
 
     override fun toTypedValue(anyValue: Any?, fails: MutableList<ValidationFailInfo>): String? {
         if (anyValue == null) return null

@@ -3,15 +3,12 @@
  */
 package hu.simplexion.z2.schematic.kotlin.ir.access
 
-import hu.simplexion.z2.schematic.kotlin.ir.SCHEMATIC_ACCESS_CONTEXT_ARG_COUNT
-import hu.simplexion.z2.schematic.kotlin.ir.SCHEMATIC_ACCESS_CONTEXT_FIELD_INDEX
-import hu.simplexion.z2.schematic.kotlin.ir.SCHEMATIC_SCHEMA_PROPERTY
 import hu.simplexion.z2.schematic.kotlin.ir.SchematicPluginContext
 import hu.simplexion.z2.schematic.kotlin.ir.util.IrBuilder
 import org.jetbrains.kotlin.ir.expressions.*
-import org.jetbrains.kotlin.ir.expressions.impl.IrConstructorCallImpl
-import org.jetbrains.kotlin.ir.types.getClass
-import org.jetbrains.kotlin.ir.util.*
+import org.jetbrains.kotlin.ir.util.deepCopyWithSymbols
+import org.jetbrains.kotlin.ir.util.isLocal
+import org.jetbrains.kotlin.ir.util.statements
 
 class SchematicAccessCallTransform(
     override val pluginContext: SchematicPluginContext,
@@ -61,31 +58,14 @@ class SchematicAccessCallTransform(
     }
 
     private fun setSchematicContext(fieldName: String, schematicGet: IrExpression) {
-        val type = schematicGet.type
-        val schematicClass = checkNotNull(type.getClass()) { "missing schematic class: $type" }
 
-        val getSchema = irCall(
-            checkNotNull(schematicClass.getPropertyGetter(SCHEMATIC_SCHEMA_PROPERTY)) { "missing schematicSchema getter" },
-            dispatchReceiver = schematicGet
-        )
-
-        val getField = irCall(
-            pluginContext.schemaGetField,
-            dispatchReceiver = getSchema,
+        val toSchematicAccessContext = irCall(
+            pluginContext.schematicToAccessContext,
+            dispatchReceiver = schematicGet,
             args = arrayOf(irConst(fieldName))
         )
 
-        val contextInstance = IrConstructorCallImpl(
-            SYNTHETIC_OFFSET, SYNTHETIC_OFFSET,
-            pluginContext.schematicAccessContextClass.defaultType,
-            pluginContext.schematicAccessContextConstructor,
-            0, 0,
-            SCHEMATIC_ACCESS_CONTEXT_ARG_COUNT // field
-        ).also { constructorCall ->
-            constructorCall.putValueArgument(SCHEMATIC_ACCESS_CONTEXT_FIELD_INDEX, getField)
-        }
-
-        safCall.putValueArgument(safCall.valueArgumentsCount - 2, contextInstance)
+        safCall.putValueArgument(safCall.valueArgumentsCount - 2, toSchematicAccessContext)
     }
 
 }

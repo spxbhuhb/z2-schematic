@@ -9,13 +9,15 @@ import hu.simplexion.z2.schematic.runtime.schema.validation.validationStrings
 class IntSchemaField(
     override val name: String,
     override val nullable: Boolean = false,
-    override val default: Int = 0,
+    override val definitionDefault: Int? = null,
     val min: Int? = null,
     val max: Int? = null,
 ) : SchemaField<Int> {
 
     override val type: SchemaFieldType
         get() = SchemaFieldType.Int
+
+    override val naturalDefault = 0
 
     override fun toTypedValue(anyValue: Any?, fails: MutableList<ValidationFailInfo>): Int? {
         if (anyValue == null) return null

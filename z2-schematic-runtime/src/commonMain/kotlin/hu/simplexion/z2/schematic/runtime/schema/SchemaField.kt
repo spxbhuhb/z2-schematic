@@ -1,5 +1,6 @@
 package hu.simplexion.z2.schematic.runtime.schema
 
+import hu.simplexion.z2.schematic.runtime.Schematic
 import hu.simplexion.z2.schematic.runtime.SchematicChange
 import hu.simplexion.z2.schematic.runtime.schema.validation.FieldValidationResult
 import hu.simplexion.z2.schematic.runtime.schema.validation.ValidationFailInfo
@@ -9,13 +10,14 @@ interface SchemaField<T> {
     val name: String
     val type: SchemaFieldType
     val nullable: Boolean
-    val default: T
+    val definitionDefault: T?
+    val naturalDefault : T
 
     fun toTypedValue(anyValue: Any?, fails: MutableList<ValidationFailInfo>): T?
 
     fun validate(anyValue: Any?): FieldValidationResult {
         val fails = mutableListOf<ValidationFailInfo>()
-        val value = toTypedValue(anyValue,fails)
+        val value = toTypedValue(anyValue, fails)
 
         validateNullable(value, fails)
 
@@ -26,7 +28,7 @@ interface SchemaField<T> {
         )
     }
 
-    suspend fun validateSuspend(anyValue: Any?) : FieldValidationResult {
+    suspend fun validateSuspend(anyValue: Any?): FieldValidationResult {
         return validate(anyValue)
     }
 
@@ -39,6 +41,21 @@ interface SchemaField<T> {
 
     fun validateNotNullable(value: T, fails: MutableList<ValidationFailInfo>)
 
-    fun asChange(value : Any?) = SchematicChange(name, value)
+    fun asChange(value: Any?) = SchematicChange(name, value)
+
+    /**
+     * Initializes the field to its default value. This does **NOT** go through
+     * the normal change process. No change added nor listener called.
+     *
+     * @throws IllegalStateException  if the value is already initialized
+     */
+    fun initWithDefault(schematic: Schematic<*>) {
+        val value = when {
+            definitionDefault != null -> definitionDefault
+            nullable -> null
+            else -> naturalDefault
+        }
+        check(schematic.schematicValues.put(name, value) == null) { "value already initialized" }
+    }
 
 }

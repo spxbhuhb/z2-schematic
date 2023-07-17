@@ -28,9 +28,9 @@ public class BoxTestGenerated extends AbstractBoxTest {
     }
 
     @Test
-    @TestMetadata("nullable.kt")
-    public void testNullable() throws Exception {
-        runTest("testData/box/nullable.kt");
+    @TestMetadata("saf.kt")
+    public void testSaf() throws Exception {
+        runTest("testData/box/saf.kt");
     }
 
     @Test

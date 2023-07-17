@@ -52,4 +52,19 @@ class Schema(
             fieldResults
         )
     }
+
+    /**
+     * Initializes all fields to the default value. These changes do **NOT**
+     * go into the change list, nor they generate listener calls. Requires
+     * `schematicValues` to be empty/
+     *
+     * @throws  IllegalStateException  `schematicValues` is not empty
+     */
+    fun initWithDefaults(schematic: Schematic<*>) {
+        check(schematic.schematicValues.isEmpty()) { "initWithDefaults called on a non-empty schematic" }
+        for (field in fields) {
+            field.initWithDefault(schematic)
+        }
+    }
+
 }

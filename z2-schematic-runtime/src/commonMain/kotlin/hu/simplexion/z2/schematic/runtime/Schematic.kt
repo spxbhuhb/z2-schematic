@@ -1,5 +1,6 @@
 package hu.simplexion.z2.schematic.runtime
 
+import hu.simplexion.z2.schematic.runtime.access.SchematicAccessContext
 import hu.simplexion.z2.schematic.runtime.schema.Schema
 import hu.simplexion.z2.schematic.runtime.schema.field.BooleanSchemaField
 import hu.simplexion.z2.schematic.runtime.schema.field.IntSchemaField
@@ -141,13 +142,13 @@ abstract class Schematic<T : Schematic<T>> {
     @Suppress("UNUSED_PARAMETER")
     @FieldDefinitionFunction(BooleanSchemaField::class)
     fun boolean(
-        default: Boolean = false
+        default: Boolean? = null
     ) = PlaceholderDelegateProvider<T,Boolean>()
 
     @Suppress("UNUSED_PARAMETER")
     @FieldDefinitionFunction(IntSchemaField::class)
     fun int(
-        default: Int = 0,
+        default: Int? = null,
         min: Int? = null,
         max: Int? = null
     ) = PlaceholderDelegateProvider<T,Int>()
@@ -155,7 +156,7 @@ abstract class Schematic<T : Schematic<T>> {
     @Suppress("UNUSED_PARAMETER")
     @FieldDefinitionFunction(StringSchemaField::class)
     fun string(
-        default: String = "",
+        default: String? = null,
         minLength: Int? = null,
         maxLength: Int? = null,
         blank : Boolean? = null,
@@ -182,4 +183,11 @@ abstract class Schematic<T : Schematic<T>> {
             return PlaceholderDelegate()
         }
     }
+
+    // -----------------------------------------------------------------------------------
+    // Accessor Support
+    // -----------------------------------------------------------------------------------
+
+    fun toSchematicAccessContext(fieldName : String) : SchematicAccessContext =
+        SchematicAccessContext(this, schematicSchema.getField(fieldName), schematicValues[fieldName])
 }

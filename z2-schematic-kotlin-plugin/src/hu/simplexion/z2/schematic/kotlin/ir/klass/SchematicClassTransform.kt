@@ -9,15 +9,21 @@ import hu.simplexion.z2.schematic.kotlin.ir.SCHEMATIC_VALUES_PROPERTY
 import hu.simplexion.z2.schematic.kotlin.ir.SchematicPluginContext
 import hu.simplexion.z2.schematic.kotlin.ir.util.IrBuilder
 import org.jetbrains.kotlin.backend.common.IrElementTransformerVoidWithContext
+import org.jetbrains.kotlin.backend.common.lower.DeclarationIrBuilder
 import org.jetbrains.kotlin.descriptors.Modality
 import org.jetbrains.kotlin.ir.IrStatement
+import org.jetbrains.kotlin.ir.builders.irBlockBody
+import org.jetbrains.kotlin.ir.builders.irGetObject
+import org.jetbrains.kotlin.ir.declarations.IrAnonymousInitializer
 import org.jetbrains.kotlin.ir.declarations.IrClass
+import org.jetbrains.kotlin.ir.declarations.IrDeclarationOrigin
 import org.jetbrains.kotlin.ir.declarations.IrProperty
 import org.jetbrains.kotlin.ir.expressions.IrExpression
 import org.jetbrains.kotlin.ir.expressions.addElement
 import org.jetbrains.kotlin.ir.expressions.impl.IrConstructorCallImpl
 import org.jetbrains.kotlin.ir.expressions.impl.IrVarargImpl
 import org.jetbrains.kotlin.ir.symbols.IrFunctionSymbol
+import org.jetbrains.kotlin.ir.symbols.impl.IrAnonymousInitializerSymbolImpl
 import org.jetbrains.kotlin.ir.types.defaultType
 import org.jetbrains.kotlin.ir.types.typeWith
 import org.jetbrains.kotlin.ir.util.*
@@ -33,6 +39,7 @@ class SchematicClassTransform(
     lateinit var companionClass: IrClass
     lateinit var companionSchematicSchemaGetter: IrFunctionSymbol
     lateinit var schemaFieldsArg: IrVarargImpl
+    lateinit var initializer: IrAnonymousInitializer
 
     // index of the field in `Schema.fields`
     var fieldIndex = 0
@@ -47,7 +54,16 @@ class SchematicClassTransform(
         schematicChange = findSchematicChange()
         schematicValuesGetter = checkNotNull(declaration.getPropertyGetter(SCHEMATIC_VALUES_PROPERTY)) { "missing $SCHEMATIC_VALUES_PROPERTY getter " }
 
-        companionClass = declaration.addCompanionIfMissing()
+        addOrGetCompanionClass()
+        addInitializer()
+
+        super.visitClassNew(declaration)
+
+        return declaration
+    }
+
+    private fun addOrGetCompanionClass() {
+        companionClass = transformedClass.addCompanionIfMissing()
         companionClass.addIrProperty(
             Name.identifier(SCHEMATIC_SCHEMA_PROPERTY),
             pluginContext.schemaClass.defaultType,
@@ -57,10 +73,29 @@ class SchematicClassTransform(
             it.modality = Modality.FINAL
             companionSchematicSchemaGetter = it.getter!!.symbol
         }
+    }
 
-        super.visitClassNew(declaration)
+    private fun addInitializer() {
+        val initializer = irFactory.createAnonymousInitializer(
+            SYNTHETIC_OFFSET, SYNTHETIC_OFFSET,
+            origin = IrDeclarationOrigin.DEFINED,
+            symbol = IrAnonymousInitializerSymbolImpl(),
+            isStatic = false
+        )
 
-        return declaration
+        initializer.parent = transformedClass
+        initializer.body = DeclarationIrBuilder(irContext, initializer.symbol).irBlockBody {
+            +irCall(
+                pluginContext.schemaInitWithDefaults,
+                dispatchReceiver = irCall(
+                    companionSchematicSchemaGetter,
+                    dispatchReceiver = irGetObject(companionClass.symbol)
+                ),
+                args = arrayOf(irGet(transformedClass.thisReceiver!!))
+            )
+        }
+
+        transformedClass.declarations += initializer
     }
 
     private fun findSchematicChange(): IrFunctionSymbol =

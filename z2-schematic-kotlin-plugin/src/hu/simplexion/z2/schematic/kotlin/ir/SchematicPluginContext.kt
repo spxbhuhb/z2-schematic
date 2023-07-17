@@ -19,8 +19,11 @@ class SchematicPluginContext(
 ) {
 
     val schematicClass = SCHEMATIC_CLASS.runtimeClass()
+    val schematicToAccessContext = checkNotNull(schematicClass.getSimpleFunction(SCHEMATIC_TO_ACCESS_CONTEXT)) { "missing Schematic.toSchematicAccessContext"}
 
     val schemaClass = SCHEMA_CLASS.runtimeClass(RUNTIME_SCHEMA_PACKAGE)
+    val schemaInitWithDefaults = checkNotNull(schemaClass.getSimpleFunction("initWithDefaults")?.owner?.symbol) { "missing Schema.initWithDefault" }
+    val schemaGetField = checkNotNull(schemaClass.getSimpleFunction("getField")?.owner?.symbol) { "Schema.getField is missing" }
 
     val fdfAnnotationConstructor = FIELD_DEFINITION_FUNCTION_CLASS.runtimeClass().owner.constructors.first().symbol
     val dtfAnnotationConstructor = DEFINITION_TRANSFORM_FUNCTION_CLASS.runtimeClass().owner.constructors.first().symbol
@@ -28,10 +31,8 @@ class SchematicPluginContext(
 
     val schemaFieldClass = SCHEMA_FIELD_CLASS.runtimeClass(RUNTIME_SCHEMA_PACKAGE)
     val schemaFieldType = schemaFieldClass.defaultType
-    val schemaGetField = checkNotNull(schemaClass.getSimpleFunction("getField")?.owner?.symbol) { "Schema.getField is missing" }
 
     val schematicAccessContextClass = SCHEMATIC_ACCESS_CONTEXT.runtimeClass(RUNTIME_CONTEXT_PACKAGE).owner
-    val schematicAccessContextConstructor = schematicAccessContextClass.constructors.first().symbol
 
     val mutableMapGet = irContext.irBuiltIns.mutableMapClass.functionByName("get").owner.symbol
 

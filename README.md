@@ -1,29 +1,25 @@
 # Z2 Schematic
 
-[![Maven Central](https://img.shields.io/maven-central/v/hu.simplexion.z2/z2-rpc)](https://mvnrepository.com/artifact/hu.simplexion.z2/z2-schema)
+[![Maven Central](https://img.shields.io/maven-central/v/hu.simplexion.z2/z2-schematic)](https://mvnrepository.com/artifact/hu.simplexion.z2/z2-schematic)
 [![GitHub License](https://img.shields.io/badge/license-Apache%20License%202.0-blue.svg?style=flat)](http://www.apache.org/licenses/LICENSE-2.0)
-![Kotlin](https://img.shields.io/github/languages/top/spxbhuhb/z2-schema)
+![Kotlin](https://img.shields.io/github/languages/top/spxbhuhb/z2-schematic)
 
 Schematic classes for easy UI building, data management and communication. Part of [Z2](https://github.com/spxbhuhb/z2).
 
-Status: **initial development**
+Status: **proof-of-concept**
 
-**====  Important ====**
+Schematic classes provide functions to:
 
-**The information below is the "specification" of how the library will work, there are parts that are not implemented yet.**
-
-Schematic classes can:
-
-* provide render information for the UI
-* provide validation and user feedback for the UI
+* give metadata (data type, label, icon etc.) to UI components automatically
+* provide validation and user feedback for the UI components
 * create patches that contain only the changes
-* apply patches to existing objects
+* apply patches to previous versions
 
 The library has a runtime part and a Kotlin compiler plugin that transforms the code.
 
 ## Overview
 
-When using schematic we work mostly with:
+When using schematic we work with:
 
 * schematic data classes
 * schemas
@@ -37,30 +33,35 @@ Schematic data classes store the data the application handles:
 
 ```kotlin
 class Book : Schematic<Book>() { 
-    val title by string(maxLength = 100, blank = false)
-    val authors by list<Author>(minSize = 1, maxSize = 10)
-    val publicationDate by localDate(after = LocalDate(1970,1,1))
+    var title by string(maxLength = 100, blank = false)
+    var authors by list<Author>(minSize = 1, maxSize = 10)
+    var publicationDate by localDate(after = LocalDate(1970,1,1))
 }
 ```
 
 When you have a schematic class, you can:
 
 * get and set the properties just as you do with any other class,
-* get the changes made with the `schematicCollect` function
+* get the changes with the `schematicCollect` function
 * apply the changes to another instance of the class with the `schematicPatch` function
 * add event listeners which are called whenever a field changes
 * validate the data with the `Schema` of the class
 
-All fields are initialized to their "natural" default values. If you want a different
-value use the `default` parameter.
+#### Default Values
 
-  * int = 0
-  * string = ""
-  * nullable fields = null
+* All fields are initialized to their "natural" default values.
+* If you want a different value use the `default` parameter.
+
+| Type              | Natural Default  |
+|-------------------|------------------|
+| any nullable type | `null`           |
+| Boolean           | `false`          |
+| Int               | `0`              |
+| String            | `"" `            |
 
 ### Schemas
 
-The `Schema` is generated for the class automatically by the compiler plugin.
+The `Schema` is generated for the schematic class automatically by the compiler plugin.
 You can't see it in the editor, but it looks like this:
 
 ```kotlin
@@ -101,7 +102,7 @@ So, at the end, the function call above turns into something like this:
 
 ```kotlin
 div {
-    editor(Book.schematicSchema.fields["title"]) { book.title }
+    editor(SchematicContext(book, Book.schematicSchema.fields["title"])) { book.title }
 }
 ```
 
