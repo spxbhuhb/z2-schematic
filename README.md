@@ -15,6 +15,8 @@ Schematic classes provide functions to:
 * create patches that contain only the changes
 * apply patches to previous versions
 
+You can think of schematic classes as view models with benefits.
+
 The library has a runtime part and a Kotlin compiler plugin that transforms the code.
 
 ## Overview
@@ -95,32 +97,13 @@ div { // let's assume this is part of a web page
 }
 ```
 
-Here `editor` is a SAF. The trick is that when the compiler plugin sees a SAF call it fetches the schema field that
-belongs to the property used between the brackets and passes it to the function called, along with the value.
-
-So, at the end, the function call above turns into something like this:
-
-```kotlin
-div {
-    editor(SchematicContext(book, Book.schematicSchema.fields["title"])) { book.title }
-}
-```
-
-When you write the `editor` SAF you have the metadata that belongs to the property between the brackets, in this case
-the `title` property of the `Book` class.
-
-This has many uses. For example, you can write an `editor` that can validate the field based on the schema
-data.
-
-You can define the `editor` SAF like shown below (details about that later).
-
-Note the context parameter with the default value of `null`. This is the parameter that is set by the compiler
-plugin to contain the metadata of the property used.
+`editor` is a SAF. Let's see its implementation:
 
 ```kotlin
 @SchematicAccessFunction
 fun editor(context : SchematicAccessContext? = null, accessor : () -> Any?) {
     checkNotNull(context)
+   
     when (context.field.type) {
         SchematicFieldType.String -> stringEditor(context)
         SchematicFieldType.LocalDate -> localDateEditor(context)
@@ -128,6 +111,29 @@ fun editor(context : SchematicAccessContext? = null, accessor : () -> Any?) {
     }
 }
 ```
+
+There are a few rules SAF functions have to follow:
+
+* must be annotated with `SchematicAccessFunction`
+* the last parameter must be a lambda with one statement that must get a schematic property
+* the parameter before the last one must be of the `SchematicAccessContext` type
+
+The `SchematicAccessContext` class contains:
+
+* the instance that contains the accessed property
+* the `SchemaField` that belongs to the accessed property
+* the value of the accessed property
+
+```kotlin
+class SchematicAccessContext(
+    val schematic : Schematic<*>, // this is the instance of book used in the curly brackets.
+    val field : SchemaField<*>, // this is the metadata that belongs to `title`
+    val value : Any? // this is the value of `title`
+)
+```
+
+This has many uses. For example, you can write an `editor` that can validate the field based on the schema
+data.
 
 ## Details
 
