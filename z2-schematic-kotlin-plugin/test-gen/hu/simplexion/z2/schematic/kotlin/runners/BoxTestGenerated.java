@@ -28,6 +28,12 @@ public class BoxTestGenerated extends AbstractBoxTest {
     }
 
     @Test
+    @TestMetadata("nullable.kt")
+    public void testNullable() throws Exception {
+        runTest("testData/box/nullable.kt");
+    }
+
+    @Test
     @TestMetadata("simple.kt")
     public void testSimple() throws Exception {
         runTest("testData/box/simple.kt");

@@ -20,7 +20,9 @@ class SchematicPluginContext(
 
     val schemaClass = SCHEMA_CLASS.runtimeClass(RUNTIME_SCHEMA_PACKAGE)
 
-    val schematicDelegateConstructor = SCHEMATIC_DELEGATE_CLASS.runtimeClass().owner.constructors.first()
+    val fdfAnnotationConstructor = FIELD_DEFINITION_FUNCTION_CLASS.runtimeClass().owner.constructors.first().symbol
+    val dtfAnnotationConstructor = DEFINITION_TRANSFORM_FUNCTION_CLASS.runtimeClass().owner.constructors.first().symbol
+    val safAnnotationConstructor = SCHEMATIC_ACCESS_FUNCTION_CLASS.runtimeClass().owner.constructors.first().symbol
 
     val schemaFieldClass = SCHEMA_FIELD_CLASS.runtimeClass(RUNTIME_SCHEMA_PACKAGE)
     val schemaFieldType = schemaFieldClass.defaultType
@@ -28,6 +30,8 @@ class SchematicPluginContext(
     val mutableMapGet = irContext.irBuiltIns.mutableMapClass.functionByName("get").owner.symbol
 
     val typeSystem = IrTypeSystemContextImpl(irContext.irBuiltIns)
+
+    val funCache = SchematicFunctionCache(this)
 
     fun String.runtimeClass(pkg : String? = null) =
         checkNotNull(irContext.referenceClass(ClassId(FqName(pkg ?: RUNTIME_PACKAGE), Name.identifier(this)))) {

@@ -6,7 +6,7 @@ import hu.simplexion.z2.schematic.runtime.Schematic
 
 class Test : Schematic<Test>() {
 
-    var intField by int(min = 5)
+    var intField by int(min = 5).nullable()
 
 }
 

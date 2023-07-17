@@ -239,3 +239,8 @@ class IntSchemaField(
    }
 }
 ```
+
+### Definition Transform Functions
+
+As of now there is one definition transform function (DTF): `nullable`.
+This transforms the field into a nullable one.

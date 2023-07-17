@@ -2,7 +2,7 @@ package foo.bar
 
 import hu.simplexion.z2.schematic.runtime.Schematic
 
-class Test : Schematic<Adhoc> {
+class Test : Schematic<Test> {
     val intField by int()
     val intFieldWithDefault by int(default = 5)
 }

@@ -17,10 +17,18 @@ import org.jetbrains.kotlin.ir.util.getSimpleFunction
 
 /**
  * Replace the delegation with a getter and a setter.
+ *
+ * This transform is tricky because the getter, the setter and the property itself may be
+ * referenced from other pieces of code. Simply replacing them results in an orphaned
+ * function reference (or something like that) exception during compilation.
+ *
+ * So the solution I've come up is to keep the property, the getter and the setter, but
+ * replace the bodies and change the flags.
  */
 class SchematicPropertyTransform(
     override val pluginContext: SchematicPluginContext,
     val classTransform: SchematicClassTransform,
+    val fieldVisitor: SchematicFieldVisitor
 ) : IrElementTransformerVoidWithContext(), IrBuilder {
 
     val transformedClass
@@ -86,15 +94,19 @@ class SchematicPropertyTransform(
                 args = arrayOf(irConst(property.name.identifier))
             )
 
-            val notNull = irCall(
-                irBuiltIns.checkNotNullSymbol,
-                args = arrayOf(getValue)
-            ).apply {
-                putTypeArgument(0, irBuiltIns.anyType)
+            val beforeAs = if (!fieldVisitor.nullable) {
+                irCall(
+                    irBuiltIns.checkNotNullSymbol,
+                    args = arrayOf(getValue)
+                ).apply {
+                    putTypeArgument(0, irBuiltIns.anyType)
+                }
+            } else {
+                getValue
             }
 
             +irReturn(
-                irImplicitAs(type, notNull)
+                irImplicitAs(type, beforeAs)
             )
         }
     }
@@ -118,7 +130,7 @@ class SchematicPropertyTransform(
         func.body = DeclarationIrBuilder(irContext, func.symbol).irBlockBody {
 
             +irCall(
-                checkNotNull(transformedClass.getSimpleFunction(SCHEMATIC_CHANGE_INT)) { "missing $SCHEMATIC_CHANGE_INT" },
+                checkNotNull(transformedClass.getSimpleFunction(SCHEMATIC_CHANGE_ANY)) { "missing $SCHEMATIC_CHANGE_ANY" },
                 dispatchReceiver = irGet(func.dispatchReceiverParameter!!)
             ).apply {
                 putValueArgument(SCHEMA_CHANGE_FIELD_INDEX, irConst(property.name.identifier))

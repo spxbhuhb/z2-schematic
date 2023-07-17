@@ -66,7 +66,7 @@ abstract class Schematic<T : Schematic<T>> {
         }
     }
 
-    fun schematicChangeInt(field : String, value : Int) {
+    fun schematicChangeAny(field : String, value : Any?) {
         schematicValues[field] = value
     }
 
@@ -157,6 +157,12 @@ abstract class Schematic<T : Schematic<T>> {
         blank : Boolean? = null,
         pattern : Regex? = null
     ) = PlaceholderDelegateProvider<T,String>()
+
+    @Suppress("UNCHECKED_CAST")
+    @DefinitionTransformFunction
+    fun <V> PlaceholderDelegateProvider<T,V>.nullable() : PlaceholderDelegateProvider<T,V?> {
+        return this as PlaceholderDelegateProvider<T,V?>
+    }
 
     class PlaceholderDelegate<T, V> : ReadWriteProperty<T, V> {
         override fun getValue(thisRef: T, property: KProperty<*>): V {
