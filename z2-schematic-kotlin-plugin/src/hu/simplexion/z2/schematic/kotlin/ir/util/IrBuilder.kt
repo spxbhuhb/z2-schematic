@@ -1,5 +1,7 @@
-package hu.simplexion.z2.schematic.kotlin.ir
+package hu.simplexion.z2.schematic.kotlin.ir.util
 
+import hu.simplexion.z2.schematic.kotlin.ir.SCHEMATIC_COMPANION
+import hu.simplexion.z2.schematic.kotlin.ir.SchematicPluginContext
 import org.jetbrains.kotlin.backend.common.ir.addDispatchReceiver
 import org.jetbrains.kotlin.backend.common.lower.DeclarationIrBuilder
 import org.jetbrains.kotlin.descriptors.ClassKind
@@ -154,6 +156,14 @@ interface IrBuilder {
         UNDEFINED_OFFSET,
         irContext.irBuiltIns.longType,
         IrConstKind.Long,
+        value
+    )
+
+    fun irConst(value: Int): IrConst<Int> = IrConstImpl(
+        UNDEFINED_OFFSET,
+        UNDEFINED_OFFSET,
+        irContext.irBuiltIns.intType,
+        IrConstKind.Int,
         value
     )
 
@@ -337,7 +347,7 @@ interface IrBuilder {
             startOffset = declaration.endOffset
             endOffset = declaration.endOffset
             origin = IrDeclarationOrigin.DEFINED
-            name = Name.identifier(COMPANION)
+            name = Name.identifier(SCHEMATIC_COMPANION)
             kind = ClassKind.OBJECT
             visibility = DescriptorVisibilities.PUBLIC
             modality = Modality.FINAL

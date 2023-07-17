@@ -1,5 +1,6 @@
 package hu.simplexion.z2.schematic.runtime.schema
 
+import hu.simplexion.z2.schematic.runtime.SchematicChange
 import hu.simplexion.z2.schematic.runtime.schema.validation.FieldValidationResult
 import hu.simplexion.z2.schematic.runtime.schema.validation.ValidationFailInfo
 import hu.simplexion.z2.schematic.runtime.schema.validation.ValidationFailInfoNull
@@ -37,4 +38,7 @@ interface SchemaField<T> {
     }
 
     fun validateNotNullable(value: T, fails: MutableList<ValidationFailInfo>)
+
+    fun asChange(value : Any?) = SchematicChange(name, value)
+
 }

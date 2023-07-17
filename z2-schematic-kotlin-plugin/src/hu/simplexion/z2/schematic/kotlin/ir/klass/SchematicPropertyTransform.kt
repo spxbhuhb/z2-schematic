@@ -1,8 +1,13 @@
 /*
  * Copyright © 2022-2023, Simplexion, Hungary and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
-package hu.simplexion.z2.schematic.kotlin.ir
+package hu.simplexion.z2.schematic.kotlin.ir.klass
 
+import hu.simplexion.z2.schematic.kotlin.ir.SCHEMATIC_CHANGE_FIELD_INDEX_INDEX
+import hu.simplexion.z2.schematic.kotlin.ir.SCHEMATIC_CHANGE_FIELD_NAME_INDEX
+import hu.simplexion.z2.schematic.kotlin.ir.SCHEMATIC_CHANGE_VALUE_INDEX
+import hu.simplexion.z2.schematic.kotlin.ir.SchematicPluginContext
+import hu.simplexion.z2.schematic.kotlin.ir.util.IrBuilder
 import org.jetbrains.kotlin.backend.common.IrElementTransformerVoidWithContext
 import org.jetbrains.kotlin.backend.common.lower.DeclarationIrBuilder
 import org.jetbrains.kotlin.ir.IrStatement
@@ -13,7 +18,6 @@ import org.jetbrains.kotlin.ir.declarations.IrFunction
 import org.jetbrains.kotlin.ir.declarations.IrProperty
 import org.jetbrains.kotlin.ir.declarations.IrSimpleFunction
 import org.jetbrains.kotlin.ir.types.IrType
-import org.jetbrains.kotlin.ir.util.getSimpleFunction
 
 /**
  * Replace the delegation with a getter and a setter.
@@ -28,7 +32,8 @@ import org.jetbrains.kotlin.ir.util.getSimpleFunction
 class SchematicPropertyTransform(
     override val pluginContext: SchematicPluginContext,
     val classTransform: SchematicClassTransform,
-    val fieldVisitor: SchematicFieldVisitor
+    val fieldVisitor: SchematicFieldVisitor,
+    val fieldIndex : Int
 ) : IrElementTransformerVoidWithContext(), IrBuilder {
 
     val transformedClass
@@ -130,12 +135,14 @@ class SchematicPropertyTransform(
         func.body = DeclarationIrBuilder(irContext, func.symbol).irBlockBody {
 
             +irCall(
-                checkNotNull(transformedClass.getSimpleFunction(SCHEMATIC_CHANGE_ANY)) { "missing $SCHEMATIC_CHANGE_ANY" },
+                classTransform.schematicChange,
                 dispatchReceiver = irGet(func.dispatchReceiverParameter!!)
             ).apply {
-                putValueArgument(SCHEMA_CHANGE_FIELD_INDEX, irConst(property.name.identifier))
-                putValueArgument(SCHEMA_CHANGE_VALUE_INDEX, irGet(func.valueParameters[0]))
+                putValueArgument(SCHEMATIC_CHANGE_FIELD_NAME_INDEX, irConst(property.name.identifier))
+                putValueArgument(SCHEMATIC_CHANGE_FIELD_INDEX_INDEX, irConst(fieldIndex))
+                putValueArgument(SCHEMATIC_CHANGE_VALUE_INDEX, irGet(func.valueParameters[0]))
             }
+
         }
     }
 

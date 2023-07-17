@@ -1,7 +1,7 @@
 /*
  * Copyright © 2022-2023, Simplexion, Hungary and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
-package hu.simplexion.z2.schematic.kotlin.ir
+package hu.simplexion.z2.schematic.kotlin.ir.util
 
 import org.jetbrains.kotlin.compiler.plugin.AbstractCliOption
 import org.jetbrains.kotlin.compiler.plugin.CommandLineProcessor

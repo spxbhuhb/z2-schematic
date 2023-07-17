@@ -1,8 +1,14 @@
 /*
  * Copyright © 2022-2023, Simplexion, Hungary and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
-package hu.simplexion.z2.schematic.kotlin.ir
+package hu.simplexion.z2.schematic.kotlin.ir.klass
 
+import hu.simplexion.z2.schematic.kotlin.ir.FIELD_CONSTRUCTOR_NAME_INDEX
+import hu.simplexion.z2.schematic.kotlin.ir.FIELD_CONSTRUCTOR_NULLABLE_INDEX
+import hu.simplexion.z2.schematic.kotlin.ir.FIELD_CONSTRUCTOR_VARARG_INDEX
+import hu.simplexion.z2.schematic.kotlin.ir.SchematicPluginContext
+import hu.simplexion.z2.schematic.kotlin.ir.util.IrBuilder
+import hu.simplexion.z2.schematic.kotlin.ir.util.SchematicFunctionType
 import org.jetbrains.kotlin.backend.jvm.ir.receiverAndArgs
 import org.jetbrains.kotlin.ir.backend.js.utils.valueArguments
 import org.jetbrains.kotlin.ir.declarations.IrProperty

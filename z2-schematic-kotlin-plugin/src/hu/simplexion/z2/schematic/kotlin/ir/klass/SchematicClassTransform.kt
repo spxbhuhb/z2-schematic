@@ -1,8 +1,13 @@
 /*
  * Copyright © 2022-2023, Simplexion, Hungary and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
-package hu.simplexion.z2.schematic.kotlin.ir
+package hu.simplexion.z2.schematic.kotlin.ir.klass
 
+import hu.simplexion.z2.schematic.kotlin.ir.SCHEMATIC_CHANGE
+import hu.simplexion.z2.schematic.kotlin.ir.SCHEMATIC_SCHEMA_PROPERTY
+import hu.simplexion.z2.schematic.kotlin.ir.SCHEMATIC_VALUES_PROPERTY
+import hu.simplexion.z2.schematic.kotlin.ir.SchematicPluginContext
+import hu.simplexion.z2.schematic.kotlin.ir.util.IrBuilder
 import org.jetbrains.kotlin.backend.common.IrElementTransformerVoidWithContext
 import org.jetbrains.kotlin.descriptors.Modality
 import org.jetbrains.kotlin.ir.IrStatement
@@ -15,10 +20,7 @@ import org.jetbrains.kotlin.ir.expressions.impl.IrVarargImpl
 import org.jetbrains.kotlin.ir.symbols.IrFunctionSymbol
 import org.jetbrains.kotlin.ir.types.defaultType
 import org.jetbrains.kotlin.ir.types.typeWith
-import org.jetbrains.kotlin.ir.util.SYNTHETIC_OFFSET
-import org.jetbrains.kotlin.ir.util.defaultType
-import org.jetbrains.kotlin.ir.util.getPropertyGetter
-import org.jetbrains.kotlin.ir.util.primaryConstructor
+import org.jetbrains.kotlin.ir.util.*
 import org.jetbrains.kotlin.name.Name
 
 class SchematicClassTransform(
@@ -27,9 +29,13 @@ class SchematicClassTransform(
 
     lateinit var transformedClass: IrClass
     lateinit var schematicValuesGetter: IrFunctionSymbol
+    lateinit var schematicChange: IrFunctionSymbol
     lateinit var companionClass: IrClass
     lateinit var companionSchematicSchemaGetter: IrFunctionSymbol
     lateinit var schemaFieldsArg: IrVarargImpl
+
+    // index of the field in `Schema.fields`
+    var fieldIndex = 0
 
     override fun visitClassNew(declaration: IrClass): IrStatement {
 
@@ -38,6 +44,7 @@ class SchematicClassTransform(
         }
 
         transformedClass = declaration
+        schematicChange = findSchematicChange()
         schematicValuesGetter = checkNotNull(declaration.getPropertyGetter(SCHEMATIC_VALUES_PROPERTY)) { "missing $SCHEMATIC_VALUES_PROPERTY getter " }
 
         companionClass = declaration.addCompanionIfMissing()
@@ -55,6 +62,17 @@ class SchematicClassTransform(
 
         return declaration
     }
+
+    private fun findSchematicChange(): IrFunctionSymbol =
+        checkNotNull(
+            transformedClass.functions.firstOrNull {
+                it.name.identifier == SCHEMATIC_CHANGE &&
+                    it.valueParameters.size == 3 &&
+                    it.valueParameters[0].type == irBuiltIns.stringType &&
+                    it.valueParameters[1].type == irBuiltIns.intType &&
+                    it.valueParameters[2].type == irBuiltIns.anyNType
+            }?.symbol
+        ) { "missing schematicChange function" }
 
     fun buildSchemaInitializer(): IrExpression =
 
@@ -91,7 +109,7 @@ class SchematicClassTransform(
         declaration.accept(fieldVisitor, null)
         schemaFieldsArg.addElement(fieldVisitor.schemaField)
 
-        return declaration.accept(SchematicPropertyTransform(pluginContext, this, fieldVisitor), null) as IrStatement
+        return declaration.accept(SchematicPropertyTransform(pluginContext, this, fieldVisitor, fieldIndex++), null) as IrStatement
     }
 
 

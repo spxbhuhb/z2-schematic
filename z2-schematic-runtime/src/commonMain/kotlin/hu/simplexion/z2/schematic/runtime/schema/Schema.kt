@@ -9,6 +9,11 @@ class Schema(
 ) {
 
     /**
+     * Get a field by its name.
+     */
+    fun getField(fieldName : String) = fields.first { it.name == fieldName }
+
+    /**
      * Calls the `validate` function of all fields in the schema on the value
      * that belongs to the field in [schematic].
      */

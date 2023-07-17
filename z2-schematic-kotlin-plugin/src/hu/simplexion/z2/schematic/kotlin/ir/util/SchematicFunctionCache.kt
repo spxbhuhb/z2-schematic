@@ -1,5 +1,7 @@
-package hu.simplexion.z2.schematic.kotlin.ir
+package hu.simplexion.z2.schematic.kotlin.ir.util
 
+import hu.simplexion.z2.schematic.kotlin.ir.FDF_ANNOTATION_FIELD_CLASS_INDEX
+import hu.simplexion.z2.schematic.kotlin.ir.SchematicPluginContext
 import org.jetbrains.kotlin.ir.expressions.IrCall
 import org.jetbrains.kotlin.ir.expressions.IrClassReference
 import org.jetbrains.kotlin.ir.expressions.IrConstructorCall

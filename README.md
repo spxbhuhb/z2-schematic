@@ -111,13 +111,15 @@ the `title` property of the `Book` class.
 This has many uses. For example, you can write an `editor` that can validate the field based on the schema
 data.
 
-You can define the `editor` SAF like this (details about that later). Note the context parameter that is
-set to a default value of `SchematicContext.NONE`. This is the parameter that is set by the compiler
+You can define the `editor` SAF like shown below (details about that later).
+
+Note the context parameter with the default value of `null`. This is the parameter that is set by the compiler
 plugin to contain the metadata of the property used.
 
 ```kotlin
 @SchematicAccessFunction
-fun editor(context : SchematicContext = SchematicContext.NONE, accessor : () -> Any) {
+fun editor(context : SchematicAccessContext? = null, accessor : () -> Any?) {
+    checkNotNull(context)
     when (context.field.type) {
         SchematicFieldType.String -> stringEditor(context)
         SchematicFieldType.LocalDate -> localDateEditor(context)

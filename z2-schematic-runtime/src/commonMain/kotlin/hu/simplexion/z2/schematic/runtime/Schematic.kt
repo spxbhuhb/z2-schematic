@@ -47,7 +47,7 @@ abstract class Schematic<T : Schematic<T>> {
     /**
      * Change the value of a field.
      *
-     * - puts the new value into [schematicValues]
+     * - update the value in [schematicValues] (by calling `SchematicChange.patch`)
      * - adds the change to [schematicChanges]
      * - calls all listeners from [schematicListeners]
      */
@@ -66,8 +66,12 @@ abstract class Schematic<T : Schematic<T>> {
         }
     }
 
-    fun schematicChangeAny(field : String, value : Any?) {
-        schematicValues[field] = value
+    /**
+     * Creates a [SchematicChange] by calling `SchematicField.asChange` and then
+     * calls [schematicChange] with it.
+     */
+    fun schematicChange(fieldName : String, fieldIndex : Int, value : Any?) {
+        schematicChange(fieldName, schematicSchema.fields[fieldIndex].asChange(value))
     }
 
     /**
