@@ -142,7 +142,7 @@ publishing {
             artifact(javadocJar.get())
 
             pom {
-                description.set("Kotlin compiler plugin that adds code that counts how many times some code runs.")
+                description.set("Schematic classes for easy UI building, data management and communication.")
                 name.set(project.name)
                 url.set("https://github.com/$scmPath")
                 scm {
