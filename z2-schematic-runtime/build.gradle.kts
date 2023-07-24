@@ -57,7 +57,7 @@ tasks.named<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar>("shadowJ
 // ----  Publishing ----
 
 val String.propValue
-    get() = (System.getenv(this.uppercase().replace('.', '_')) ?: project.findProperty(this))?.toString() ?: ""
+    get() = (System.getenv(this.toUpperCase().replace('.', '_')) ?: project.findProperty(this))?.toString() ?: ""
 
 val isPublishing = "z2.publish".propValue
 val publishSnapshotUrl = "z2.publish.snapshot.url".propValue

@@ -1,10 +1,12 @@
 package hu.simplexion.z2.schematic.runtime
 
+import hu.simplexion.z2.commons.util.UUID
 import hu.simplexion.z2.schematic.runtime.access.SchematicAccessContext
 import hu.simplexion.z2.schematic.runtime.schema.Schema
 import hu.simplexion.z2.schematic.runtime.schema.field.BooleanSchemaField
 import hu.simplexion.z2.schematic.runtime.schema.field.IntSchemaField
 import hu.simplexion.z2.schematic.runtime.schema.field.StringSchemaField
+import hu.simplexion.z2.schematic.runtime.schema.field.UuidSchemaField
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
 
@@ -168,6 +170,13 @@ abstract class Schematic<T : Schematic<T>> {
         blank : Boolean? = null,
         pattern : Regex? = null
     ) = PlaceholderDelegateProvider<T,String>()
+
+    @Suppress("UNUSED_PARAMETER")
+    @FieldDefinitionFunction(UuidSchemaField::class)
+    fun <V> uuid(
+        default: UUID<T>? = null,
+        nil : Boolean? = null,
+    ) = PlaceholderDelegateProvider<T,UUID<V>>()
 
     @Suppress("UNCHECKED_CAST")
     @DefinitionTransformFunction
