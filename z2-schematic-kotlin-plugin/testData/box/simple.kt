@@ -18,7 +18,7 @@ fun box(): String {
     if (field !is IntSchemaField) return "Fail: not IntSchemaField"
 
     if (field.name != "intField") return "Fail: wrong field name"
-    if (field.default != 0) return "Fail: wrong field default"
+    if (field.definitionDefault != null) return "Fail: wrong field default"
     if (field.min != 5) return "Fail: wrong field min"
     if (field.max != null) return "Fail: wrong field max"
 

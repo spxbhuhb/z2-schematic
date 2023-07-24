@@ -36,10 +36,16 @@ abstract class Schematic<T : Schematic<T>> {
 
     /**
      * Get the schema of this schematic. Returns with the value of
-     * `Companion.schematicSchema`.
+     * `schematicCompanion.schematicSchema`.
      */
     open val schematicSchema : Schema
         get() = throw IllegalStateException("Schematic.schematicSchema.get should never be called, most probably the compiler plugin is missing.")
+
+    /**
+     * Get the companion object of this schematic.
+     */
+    open val schematicCompanion : SchematicCompanion<T>
+        get() = throw IllegalStateException("Schematic.schematicCompanion.get should never be called, most probably the compiler plugin is missing.")
 
     // -----------------------------------------------------------------------------------
     // Change management
@@ -190,4 +196,5 @@ abstract class Schematic<T : Schematic<T>> {
 
     fun toSchematicAccessContext(fieldName : String) : SchematicAccessContext =
         SchematicAccessContext(this, schematicSchema.getField(fieldName), schematicValues[fieldName])
+
 }

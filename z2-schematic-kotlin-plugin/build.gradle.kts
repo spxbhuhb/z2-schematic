@@ -11,7 +11,7 @@ plugins {
 }
 
 group = "hu.simplexion.z2"
-version = "2023.7.14-SNAPSHOT"
+version = "2023.7.24-SNAPSHOT"
 
 val scmPath = "spxbhuhb/z2-schematic"
 

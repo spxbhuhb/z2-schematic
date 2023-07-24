@@ -1,5 +1,7 @@
 package hu.simplexion.z2.schematic.runtime.schema
 
+import hu.simplexion.z2.commons.protobuf.ProtoMessage
+import hu.simplexion.z2.commons.protobuf.ProtoMessageBuilder
 import hu.simplexion.z2.schematic.runtime.Schematic
 import hu.simplexion.z2.schematic.runtime.schema.validation.FieldValidationResult
 import hu.simplexion.z2.schematic.runtime.schema.validation.SchematicValidationResult
@@ -67,4 +69,19 @@ class Schema(
         }
     }
 
+    fun encodeProto(schematic: Schematic<*>) : ByteArray {
+        val builder = ProtoMessageBuilder()
+        for (index in fields.indices) {
+            fields[index].encodeProto(schematic, index + 1, builder)
+        }
+        return builder.pack()
+    }
+
+    fun decodeProto(schematic: Schematic<*>, message: ProtoMessage?) : Schematic<*> {
+        if (message == null) return schematic
+        for (index in fields.indices) {
+            fields[index].decodeProto(schematic, index + 1, message)
+        }
+        return schematic
+    }
 }

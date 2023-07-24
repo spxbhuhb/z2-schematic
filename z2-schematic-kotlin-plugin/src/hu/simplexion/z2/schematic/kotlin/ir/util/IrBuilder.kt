@@ -1,6 +1,6 @@
 package hu.simplexion.z2.schematic.kotlin.ir.util
 
-import hu.simplexion.z2.schematic.kotlin.ir.SCHEMATIC_COMPANION
+import hu.simplexion.z2.schematic.kotlin.ir.SCHEMATIC_COMPANION_NAME
 import hu.simplexion.z2.schematic.kotlin.ir.SchematicPluginContext
 import org.jetbrains.kotlin.backend.common.ir.addDispatchReceiver
 import org.jetbrains.kotlin.backend.common.lower.DeclarationIrBuilder
@@ -77,6 +77,8 @@ interface IrBuilder {
         if (inIsVar) {
             irProperty.addDefaultSetter(irField)
         }
+
+        irField.correspondingPropertySymbol = irProperty.symbol
 
         return irProperty
     }
@@ -347,7 +349,7 @@ interface IrBuilder {
             startOffset = declaration.endOffset
             endOffset = declaration.endOffset
             origin = IrDeclarationOrigin.DEFINED
-            name = Name.identifier(SCHEMATIC_COMPANION)
+            name = Name.identifier(SCHEMATIC_COMPANION_NAME)
             kind = ClassKind.OBJECT
             visibility = DescriptorVisibilities.PUBLIC
             modality = Modality.FINAL

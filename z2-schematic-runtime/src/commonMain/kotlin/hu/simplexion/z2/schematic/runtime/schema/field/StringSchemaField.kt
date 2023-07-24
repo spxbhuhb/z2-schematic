@@ -1,5 +1,8 @@
 package hu.simplexion.z2.schematic.runtime.schema.field
 
+import hu.simplexion.z2.commons.protobuf.ProtoMessage
+import hu.simplexion.z2.commons.protobuf.ProtoMessageBuilder
+import hu.simplexion.z2.schematic.runtime.Schematic
 import hu.simplexion.z2.schematic.runtime.schema.SchemaField
 import hu.simplexion.z2.schematic.runtime.schema.SchemaFieldType
 import hu.simplexion.z2.schematic.runtime.schema.validation.ValidationFailInfo
@@ -38,4 +41,15 @@ class StringSchemaField(
         if (blank == false && value.isBlank()) fails += fail(validationStrings.blankFail)
         if (pattern != null && !pattern.matches(value)) fails += fail(validationStrings.patternFail)
     }
+
+    override fun encodeProto(schematic: Schematic<*>, fieldNumber: Int, builder: ProtoMessageBuilder) {
+        val value = toTypedValue(schematic.schematicValues[name], mutableListOf()) ?: return
+        builder.string(fieldNumber, value)
+    }
+
+    override fun decodeProto(schematic: Schematic<*>, fieldNumber: Int, message: ProtoMessage) {
+        val value = message.string(fieldNumber)
+        schematic.schematicValues[name] = value
+    }
+
 }

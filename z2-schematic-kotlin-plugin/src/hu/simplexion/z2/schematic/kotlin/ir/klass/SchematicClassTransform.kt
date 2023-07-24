@@ -3,10 +3,7 @@
  */
 package hu.simplexion.z2.schematic.kotlin.ir.klass
 
-import hu.simplexion.z2.schematic.kotlin.ir.SCHEMATIC_CHANGE
-import hu.simplexion.z2.schematic.kotlin.ir.SCHEMATIC_SCHEMA_PROPERTY
-import hu.simplexion.z2.schematic.kotlin.ir.SCHEMATIC_VALUES_PROPERTY
-import hu.simplexion.z2.schematic.kotlin.ir.SchematicPluginContext
+import hu.simplexion.z2.schematic.kotlin.ir.*
 import hu.simplexion.z2.schematic.kotlin.ir.util.IrBuilder
 import org.jetbrains.kotlin.backend.common.IrElementTransformerVoidWithContext
 import org.jetbrains.kotlin.backend.common.lower.DeclarationIrBuilder
@@ -24,6 +21,7 @@ import org.jetbrains.kotlin.ir.expressions.impl.IrConstructorCallImpl
 import org.jetbrains.kotlin.ir.expressions.impl.IrVarargImpl
 import org.jetbrains.kotlin.ir.symbols.IrFunctionSymbol
 import org.jetbrains.kotlin.ir.symbols.impl.IrAnonymousInitializerSymbolImpl
+import org.jetbrains.kotlin.ir.types.classFqName
 import org.jetbrains.kotlin.ir.types.defaultType
 import org.jetbrains.kotlin.ir.types.typeWith
 import org.jetbrains.kotlin.ir.util.*
@@ -38,6 +36,7 @@ class SchematicClassTransform(
     lateinit var schematicChange: IrFunctionSymbol
     lateinit var companionClass: IrClass
     lateinit var companionSchematicSchemaGetter: IrFunctionSymbol
+
     lateinit var schemaFieldsArg: IrVarargImpl
     lateinit var initializer: IrAnonymousInitializer
 
@@ -46,9 +45,7 @@ class SchematicClassTransform(
 
     override fun visitClassNew(declaration: IrClass): IrStatement {
 
-        if (!declaration.superTypes.contains(pluginContext.schematicClass.typeWith(declaration.defaultType))) {
-            return declaration
-        }
+        if (::transformedClass.isInitialized) return declaration
 
         transformedClass = declaration
         schematicChange = findSchematicChange()
@@ -64,14 +61,22 @@ class SchematicClassTransform(
 
     private fun addOrGetCompanionClass() {
         companionClass = transformedClass.addCompanionIfMissing()
+
         companionClass.addIrProperty(
             Name.identifier(SCHEMATIC_SCHEMA_PROPERTY),
             pluginContext.schemaClass.defaultType,
             inIsVar = false,
-            buildSchemaInitializer()
+            buildSchemaInitializer(),
+            listOf(pluginContext.schematicCompanionSchematicSchema)
         ).also {
             it.modality = Modality.FINAL
             companionSchematicSchemaGetter = it.getter!!.symbol
+        }
+
+        SchematicProtoCoders(pluginContext, this).build()
+
+        if (companionClass.superTypes.firstOrNull { it.classFqName?.shortName()?.identifier == SCHEMATIC_COMPANION_CLASS } == null) {
+            companionClass.superTypes += listOf(pluginContext.schematicCompanionClass.typeWith(transformedClass.defaultType))
         }
     }
 
@@ -132,8 +137,14 @@ class SchematicClassTransform(
 
     override fun visitPropertyNew(declaration: IrProperty): IrStatement {
 
-        if (declaration.name.identifier == SCHEMATIC_SCHEMA_PROPERTY) {
+        val name = declaration.name.identifier
+
+        if (name == SCHEMATIC_SCHEMA_PROPERTY) {
             return declaration.accept(SchematicSchemaPropertyTransform(pluginContext, this), null) as IrStatement
+        }
+
+        if (name == SCHEMATIC_COMPANION_PROPERTY) {
+            return declaration.accept(SchematicCompanionPropertyTransform(pluginContext, this), null) as IrStatement
         }
 
         if (!declaration.isDelegated) {
@@ -146,6 +157,5 @@ class SchematicClassTransform(
 
         return declaration.accept(SchematicPropertyTransform(pluginContext, this, fieldVisitor, fieldIndex++), null) as IrStatement
     }
-
 
 }

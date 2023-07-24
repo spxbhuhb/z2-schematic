@@ -1,5 +1,8 @@
 package hu.simplexion.z2.schematic.runtime.schema.field
 
+import hu.simplexion.z2.commons.protobuf.ProtoMessage
+import hu.simplexion.z2.commons.protobuf.ProtoMessageBuilder
+import hu.simplexion.z2.schematic.runtime.Schematic
 import hu.simplexion.z2.schematic.runtime.schema.SchemaField
 import hu.simplexion.z2.schematic.runtime.schema.SchemaFieldType
 import hu.simplexion.z2.schematic.runtime.schema.validation.ValidationFailInfo
@@ -33,4 +36,15 @@ class BooleanSchemaField(
     override fun validateNotNullable(value: Boolean, fails: MutableList<ValidationFailInfo>) {
 
     }
+
+    override fun encodeProto(schematic: Schematic<*>, fieldNumber: Int, builder: ProtoMessageBuilder) {
+        val value = toTypedValue(schematic.schematicValues[name], mutableListOf()) ?: return
+        builder.boolean(fieldNumber, value)
+    }
+
+    override fun decodeProto(schematic: Schematic<*>, fieldNumber: Int, message: ProtoMessage) {
+        val value = message.boolean(fieldNumber)
+        schematic.schematicValues[name] = value
+    }
+
 }

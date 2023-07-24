@@ -41,21 +41,27 @@ open class AbstractBoxTest : BaseTestRunner(), RunnerWithTargetBackendForTestGen
             dependencyKind = DependencyKind.Binary
         }
 
+        val dumps = false
+
         useCustomRuntimeClasspathProviders(AbstractBoxTest::SchematicRuntimeClassPathProvider)
 
         configureFirParser(FirParser.Psi)
 
-        defaultDirectives {
-            +DUMP_IR
+        if (dumps) {
+            defaultDirectives {
+                +DUMP_IR
+            }
         }
 
-        commonFirWithPluginFrontendConfiguration()
+        commonFirWithPluginFrontendConfiguration(dumps)
         fir2IrStep()
         irHandlersStep {
-            useHandlers(
-                ::IrTextDumpHandler,
-                ::IrTreeVerifierHandler,
-            )
+            if (dumps) {
+                useHandlers(
+                    ::IrTextDumpHandler,
+                    ::IrTreeVerifierHandler,
+                )
+            }
         }
         facadeStep(::JvmIrBackendFacade)
 

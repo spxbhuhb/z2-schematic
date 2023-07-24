@@ -1,5 +1,8 @@
 package hu.simplexion.z2.schematic.runtime.schema.field
 
+import hu.simplexion.z2.commons.protobuf.ProtoMessage
+import hu.simplexion.z2.commons.protobuf.ProtoMessageBuilder
+import hu.simplexion.z2.schematic.runtime.Schematic
 import hu.simplexion.z2.schematic.runtime.schema.SchemaField
 import hu.simplexion.z2.schematic.runtime.schema.SchemaFieldType
 import hu.simplexion.z2.schematic.runtime.schema.validation.ValidationFailInfo
@@ -37,4 +40,15 @@ class IntSchemaField(
         if (min != null && value < min) fails += fail(validationStrings.minValueFail, min)
         if (max != null && value > max) fails += fail(validationStrings.maxValueFail, max)
     }
+
+    override fun encodeProto(schematic: Schematic<*>, fieldNumber: Int, builder: ProtoMessageBuilder) {
+        val value = toTypedValue(schematic.schematicValues[name], mutableListOf()) ?: return
+        builder.int(fieldNumber, value)
+    }
+
+    override fun decodeProto(schematic: Schematic<*>, fieldNumber: Int, message: ProtoMessage) {
+        val value = message.int(fieldNumber)
+        schematic.schematicValues[name] = value
+    }
+
 }

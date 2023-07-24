@@ -1,5 +1,7 @@
 package hu.simplexion.z2.schematic.runtime.schema
 
+import hu.simplexion.z2.commons.protobuf.ProtoMessage
+import hu.simplexion.z2.commons.protobuf.ProtoMessageBuilder
 import hu.simplexion.z2.schematic.runtime.Schematic
 import hu.simplexion.z2.schematic.runtime.SchematicChange
 import hu.simplexion.z2.schematic.runtime.schema.validation.FieldValidationResult
@@ -57,5 +59,9 @@ interface SchemaField<T> {
         }
         check(schematic.schematicValues.put(name, value) == null) { "value already initialized" }
     }
+
+    fun encodeProto(schematic: Schematic<*>, fieldNumber: Int, builder: ProtoMessageBuilder)
+
+    fun decodeProto(schematic: Schematic<*>, fieldNumber : Int, message: ProtoMessage)
 
 }

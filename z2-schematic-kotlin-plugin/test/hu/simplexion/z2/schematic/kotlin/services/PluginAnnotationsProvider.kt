@@ -14,7 +14,7 @@ class PluginAnnotationsProvider(testServices: TestServices) : EnvironmentConfigu
     companion object {
         private const val ANNOTATIONS_JAR_DIR = "../z2-schematic-runtime/build/libs/"
         private val ANNOTATIONS_JAR_FILTER = FilenameFilter { _, name ->
-            name.startsWith("z2-schematic-runtime-jvm") && name.endsWith(".jar") && "sources" !in name
+            name.startsWith("z2-schematic-runtime-") && name.endsWith("-all.jar") && "sources" !in name
         }
     }
 
@@ -25,5 +25,5 @@ class PluginAnnotationsProvider(testServices: TestServices) : EnvironmentConfigu
         configuration.addJvmClasspathRoot(jar)
     }
 
-    private val failMessage = { "Runtime JAR does not exist. Please run :z2-schematic-runtime:jar" }
+    private val failMessage = { "Runtime JAR does not exist. Please run :z2-schematic-runtime:shadowJar" }
 }

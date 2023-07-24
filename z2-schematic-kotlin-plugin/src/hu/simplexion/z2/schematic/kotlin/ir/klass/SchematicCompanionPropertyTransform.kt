@@ -18,20 +18,9 @@ import org.jetbrains.kotlin.ir.declarations.IrSimpleFunction
 import org.jetbrains.kotlin.ir.types.IrType
 
 /**
- * Transform the `schematicSchema` property so that it retrieves the value from the companion.
- *
- * ```text
- *     PROPERTY FAKE_OVERRIDE name:schematicSchema visibility:public modality:OPEN [fake_override,val]
- *       overridden:
- *         public open schematicSchema: hu.simplexion.z2.schematic.runtime.schema.Schema [val]
- *       FUN FAKE_OVERRIDE name:<get-schematicSchema> visibility:public modality:OPEN <> ($this:hu.simplexion.z2.schematic.runtime.Schematic<T of hu.simplexion.z2.schematic.runtime.Schematic>) returnType:hu.simplexion.z2.schematic.runtime.schema.Schema [fake_override]
- *         correspondingProperty: PROPERTY FAKE_OVERRIDE name:schematicSchema visibility:public modality:OPEN [fake_override,val]
- *         overridden:
- *           public open fun <get-schematicSchema> (): hu.simplexion.z2.schematic.runtime.schema.Schema declared in hu.simplexion.z2.schematic.runtime.Schematic
- *         $this: VALUE_PARAMETER name:<this> type:hu.simplexion.z2.schematic.runtime.Schematic<T of hu.simplexion.z2.schematic.runtime.Schematic>
- * ```
+ * Transform the `schematicCompanion` property so that it retrieves the companion.
  */
-class SchematicSchemaPropertyTransform(
+class SchematicCompanionPropertyTransform(
     override val pluginContext: SchematicPluginContext,
     val classTransform: SchematicClassTransform,
 ) : IrElementTransformerVoidWithContext(), IrBuilder {
@@ -44,7 +33,7 @@ class SchematicSchemaPropertyTransform(
 
         if (!property.isFakeOverride) return declaration
 
-        check(!property.isVar) { "schematicSchema must be immutable" }
+        check(!property.isVar) { "schematicCompanion must be immutable" }
 
         property.isFakeOverride = false
         property.origin = IrDeclarationOrigin.DEFINED
@@ -54,13 +43,6 @@ class SchematicSchemaPropertyTransform(
         return property
     }
 
-    /**
-     * ```text
-     * RETURN type=kotlin.Nothing from='public open fun <get-schematicSchema> (): hu.simplexion.z2.schematic.runtime.schema.Schema declared in foo.bar.Adhoc'
-     *   CALL 'public final fun <get-schematicSchema> (): hu.simplexion.z2.schematic.runtime.schema.Schema declared in foo.bar.Adhoc.Companion' type=hu.simplexion.z2.schematic.runtime.schema.Schema origin=GET_PROPERTY
-     *     $this: GET_OBJECT 'CLASS OBJECT name:Companion modality:FINAL visibility:public [companion] superTypes:[kotlin.Any]' type=foo.bar.Adhoc.Companion
-     * ```
-     */
     override fun visitFunctionNew(declaration: IrFunction): IrStatement {
         check(declaration is IrSimpleFunction)
         val funName = declaration.name.asString()
@@ -70,12 +52,8 @@ class SchematicSchemaPropertyTransform(
         declaration.isFakeOverride = false
 
         declaration.body = DeclarationIrBuilder(irContext, declaration.symbol).irBlockBody {
-
             +irReturn(
-                irCall(
-                    classTransform.companionSchematicSchemaGetter,
-                    dispatchReceiver = irGetObject(classTransform.companionClass.symbol)
-                )
+                irGetObject(classTransform.companionClass.symbol)
             )
         }
 
