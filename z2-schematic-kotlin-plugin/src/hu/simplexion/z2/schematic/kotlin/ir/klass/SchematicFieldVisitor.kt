@@ -10,6 +10,7 @@ import hu.simplexion.z2.schematic.kotlin.ir.SchematicPluginContext
 import hu.simplexion.z2.schematic.kotlin.ir.util.IrBuilder
 import hu.simplexion.z2.schematic.kotlin.ir.util.SchematicFunctionType
 import org.jetbrains.kotlin.backend.jvm.ir.receiverAndArgs
+import org.jetbrains.kotlin.ir.backend.js.utils.typeArguments
 import org.jetbrains.kotlin.ir.backend.js.utils.valueArguments
 import org.jetbrains.kotlin.ir.declarations.IrProperty
 import org.jetbrains.kotlin.ir.expressions.IrCall
@@ -99,9 +100,15 @@ class SchematicFieldVisitor(
                 SYNTHETIC_OFFSET, SYNTHETIC_OFFSET,
                 fieldClass.type,
                 fieldClass.constructor,
-                0, 0,
+                fdfCall.typeArgumentsCount,
+                0,
                 2 + valueArguments.size // +2 = field name + nullable
             ).also { constructorCall ->
+
+                for (index in fdfCall.typeArguments.indices) {
+                    constructorCall.putTypeArgument(index, fdfCall.typeArguments[index])
+                }
+
                 constructorCall.putValueArgument(FIELD_CONSTRUCTOR_NAME_INDEX, irConst(property.name.identifier))
                 constructorCall.putValueArgument(FIELD_CONSTRUCTOR_NULLABLE_INDEX, irConst(nullable))
 

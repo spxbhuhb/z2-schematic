@@ -174,7 +174,7 @@ abstract class Schematic<T : Schematic<T>> {
     @Suppress("UNUSED_PARAMETER")
     @FieldDefinitionFunction(UuidSchemaField::class)
     fun <V> uuid(
-        default: UUID<T>? = null,
+        default: UUID<V>? = null,
         nil : Boolean? = null,
     ) = PlaceholderDelegateProvider<T,UUID<V>>()
 

@@ -60,6 +60,7 @@ When you have a schematic class, you can:
 | Boolean           | `false`          |
 | Int               | `0`              |
 | String            | `"" `            |
+| UUID<T>           | `UUID.nil<T>()`  |
 
 ### Schemas
 
@@ -197,6 +198,13 @@ fun string(
     blank : Boolean = true,
     pattern : Regex? = null
 )
+```
+
+```kotlin
+ fun <V> uuid(
+     default: UUID<V>? = null,
+     nil : Boolean? = null,
+ )
 ```
 
 ### Writing Field Definition Functions
