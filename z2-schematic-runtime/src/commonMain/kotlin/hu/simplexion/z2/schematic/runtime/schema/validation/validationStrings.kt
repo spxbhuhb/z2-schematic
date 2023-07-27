@@ -16,5 +16,9 @@ object validationStrings : LocalizedTextStore(UUID("63080e45-1b3e-41f6-aaa9-0bc6
     val patternFail by "Invalid value"
     val uuidFail by "UUID value required"
     val nilFail by "Non-NUL UUID value required"
+    val durationFail by "Duration value required"
+    val instantFail by "Instant value required"
+    val localDateFail by "Date value required"
+    val localDateTimeFail by "Date and time value required"
     val schematicFail by "Value required"
 }

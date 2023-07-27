@@ -4,8 +4,12 @@ import hu.simplexion.z2.commons.util.UUID
 import hu.simplexion.z2.schematic.runtime.access.SchematicAccessContext
 import hu.simplexion.z2.schematic.runtime.schema.Schema
 import hu.simplexion.z2.schematic.runtime.schema.field.*
+import kotlinx.datetime.Instant
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.LocalDateTime
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
+import kotlin.time.Duration
 
 abstract class Schematic<T : Schematic<T>> {
 
@@ -151,12 +155,44 @@ abstract class Schematic<T : Schematic<T>> {
     ) = PlaceholderDelegateProvider<T,Boolean>()
 
     @Suppress("UNUSED_PARAMETER")
+    @FieldDefinitionFunction(DurationSchemaField::class)
+    fun duration(
+        default: Duration? = null
+    ) = PlaceholderDelegateProvider<T,Duration>()
+
+    @Suppress("UNUSED_PARAMETER")
+    @FieldDefinitionFunction(InstantSchemaField::class)
+    fun instant(
+        default: Instant? = null
+    ) = PlaceholderDelegateProvider<T,Instant>()
+
+    @Suppress("UNUSED_PARAMETER")
     @FieldDefinitionFunction(IntSchemaField::class)
     fun int(
         default: Int? = null,
         min: Int? = null,
         max: Int? = null
     ) = PlaceholderDelegateProvider<T,Int>()
+
+    @Suppress("UNUSED_PARAMETER")
+    @FieldDefinitionFunction(LocalDateSchemaField::class)
+    fun localDate(
+        default: LocalDate? = null
+    ) = PlaceholderDelegateProvider<T, LocalDate>()
+
+    @Suppress("UNUSED_PARAMETER")
+    @FieldDefinitionFunction(LocalDateTimeSchemaField::class)
+    fun localDateTime(
+        default: LocalDateTime? = null
+    ) = PlaceholderDelegateProvider<T,LocalDateTime>()
+
+    @Suppress("UNUSED_PARAMETER")
+    @FieldDefinitionFunction(LongSchemaField::class)
+    fun long(
+        default: Long? = null,
+        min: Long? = null,
+        max: Long? = null
+    ) = PlaceholderDelegateProvider<T,Long>()
 
     @Suppress("UNUSED_PARAMETER")
     @FieldDefinitionFunction(SchematicSchemaField::class)
