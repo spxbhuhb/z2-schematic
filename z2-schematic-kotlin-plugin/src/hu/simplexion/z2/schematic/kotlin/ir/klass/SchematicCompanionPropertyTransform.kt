@@ -53,7 +53,7 @@ class SchematicCompanionPropertyTransform(
 
         declaration.body = DeclarationIrBuilder(irContext, declaration.symbol).irBlockBody {
             +irReturn(
-                irGetObject(classTransform.companionClass.symbol)
+                irGetObject(classTransform.companionTransform.companionClass.symbol)
             )
         }
 

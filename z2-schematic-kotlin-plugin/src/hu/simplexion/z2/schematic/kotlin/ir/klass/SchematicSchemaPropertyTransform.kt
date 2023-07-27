@@ -73,8 +73,8 @@ class SchematicSchemaPropertyTransform(
 
             +irReturn(
                 irCall(
-                    classTransform.companionSchematicSchemaGetter,
-                    dispatchReceiver = irGetObject(classTransform.companionClass.symbol)
+                    classTransform.companionTransform.companionSchematicSchemaGetter,
+                    dispatchReceiver = irGetObject(classTransform.companionTransform.companionClass.symbol)
                 )
             )
         }

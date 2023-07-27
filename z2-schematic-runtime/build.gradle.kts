@@ -41,12 +41,12 @@ kotlin {
         binaries.library()
     }
 
-    sourceSets {
-        commonMain {
-            dependencies {
-                api("hu.simplexion.z2:z2-commons:${z2_commons_version}")
-            }
-        }
+    sourceSets["commonMain"].dependencies {
+        api("hu.simplexion.z2:z2-commons:${z2_commons_version}")
+    }
+
+    sourceSets["commonTest"].dependencies {
+        implementation(kotlin("test"))
     }
 }
 

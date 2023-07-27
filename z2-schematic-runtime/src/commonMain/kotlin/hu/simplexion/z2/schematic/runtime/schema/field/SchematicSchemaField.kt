@@ -2,52 +2,62 @@ package hu.simplexion.z2.schematic.runtime.schema.field
 
 import hu.simplexion.z2.commons.protobuf.ProtoMessage
 import hu.simplexion.z2.commons.protobuf.ProtoMessageBuilder
-import hu.simplexion.z2.commons.util.UUID
 import hu.simplexion.z2.schematic.runtime.Schematic
+import hu.simplexion.z2.schematic.runtime.SchematicCompanion
 import hu.simplexion.z2.schematic.runtime.schema.SchemaField
 import hu.simplexion.z2.schematic.runtime.schema.SchemaFieldType
 import hu.simplexion.z2.schematic.runtime.schema.validation.ValidationFailInfo
 import hu.simplexion.z2.schematic.runtime.schema.validation.fail
 import hu.simplexion.z2.schematic.runtime.schema.validation.validationStrings
 
-class UuidSchemaField<T>(
+class SchematicSchemaField<T : Schematic<T>>(
     override val name: String,
     override val nullable: Boolean = false,
-    override val definitionDefault: UUID<T>? = null,
-    val nil : Boolean = false
-) : SchemaField<UUID<T>> {
+    override val definitionDefault: T? = null,
+    val companion: SchematicCompanion<T>
+) : SchemaField<T> {
 
     override val type: SchemaFieldType
-        get() = SchemaFieldType.UUID
+        get() = SchemaFieldType.Schematic
 
-    override val naturalDefault = UUID.nil<T>()
+    override val naturalDefault
+        get() = newInstance()
+
+    val schema = companion.schematicSchema
 
     @Suppress("UNCHECKED_CAST")
-    override fun toTypedValue(anyValue: Any?, fails: MutableList<ValidationFailInfo>): UUID<T>? {
+    override fun toTypedValue(anyValue: Any?, fails: MutableList<ValidationFailInfo>): T? {
         if (anyValue == null) return null
 
-        return when (anyValue) {
-            is UUID<*> -> anyValue as UUID<T>
-            is String -> UUID(anyValue)
-            else -> {
-                fails += fail(validationStrings.uuidFail)
-                null
-            }
+        if (anyValue !is Schematic<*>) {
+            fails += fail(validationStrings.schematicFail)
+            return null
         }
+
+        if (anyValue.schematicSchema !== schema) {
+            fails += fail(validationStrings.schematicFail)
+            return null
+        }
+
+        return anyValue as T
     }
 
-    override fun validateNotNullable(value: UUID<T>, fails: MutableList<ValidationFailInfo>) {
-        if (! nil && value == UUID.nil<T>()) fails += fail(validationStrings.nilFail)
+    override fun validateNotNullable(value: T, fails: MutableList<ValidationFailInfo>) {
+        if (! schema.validate(value).valid) {
+            fails += fail(validationStrings.schematicFail)
+        }
     }
 
     override fun encodeProto(schematic: Schematic<*>, fieldNumber: Int, builder: ProtoMessageBuilder) {
         val value = toTypedValue(schematic.schematicValues[name], mutableListOf()) ?: return
-        builder.uuid(fieldNumber, value)
+        builder.instance(fieldNumber, schema.companion, value)
     }
 
     override fun decodeProto(schematic: Schematic<*>, fieldNumber: Int, message: ProtoMessage) {
-        val value = message.uuid<T>(fieldNumber)
+        val value = message.instance(fieldNumber, schema.companion)
         schematic.schematicValues[name] = value
     }
+
+    fun newInstance(): T = companion.newInstance()
 
 }

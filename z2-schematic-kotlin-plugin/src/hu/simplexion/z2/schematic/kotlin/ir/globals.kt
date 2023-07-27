@@ -10,13 +10,16 @@ const val FIELD_DEFINITION_FUNCTION_CLASS = "FieldDefinitionFunction"
 const val DEFINITION_TRANSFORM_FUNCTION_CLASS = "DefinitionTransformFunction"
 const val SCHEMATIC_ACCESS_FUNCTION_CLASS = "SchematicAccessFunction"
 const val SCHEMATIC_COMPANION_CLASS = "SchematicCompanion"
+const val COMPANION_OBJECT_NAME = "Companion"
 
 const val SCHEMATIC_VALUES_PROPERTY = "schematicValues"
 const val SCHEMATIC_CHANGE = "schematicChange"
 const val SCHEMATIC_SCHEMA_PROPERTY = "schematicSchema"
 const val SCHEMATIC_COMPANION_PROPERTY = "schematicCompanion"
 const val SCHEMATIC_COMPANION_NAME = "Companion"
+const val SCHEMATIC_COMPANION_NEW_INSTANCE = "newInstance"
 const val SCHEMATIC_TO_ACCESS_CONTEXT = "toSchematicAccessContext"
+
 
 const val TO_ACCESS_CONTEXT_ARG_COUNT = 2
 const val TO_ACCESS_CONTEXT_SCHEMATIC_INDEX = 1
@@ -42,8 +45,6 @@ const val SCHEMATIC_ACCESS_CONTEXT = "SchematicAccessContext"
 const val PROTO_PACKAGE = "hu.simplexion.z2.commons.protobuf"
 
 const val PROTO_MESSAGE_CLASS = "ProtoMessage"
-const val PROTO_ENCODER_CLASS = "ProtoEncoder"
-const val PROTO_DECODER_CLASS = "ProtoDecoder"
 
 const val ENCODE_PROTO = "encodeProto"
 const val DECODE_PROTO = "decodeProto"

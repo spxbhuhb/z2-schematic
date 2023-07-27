@@ -10,7 +10,13 @@ class Test : Schematic<Test>() {
 }
 
 fun box(): String {
-    val test = Test()
 
-    return if (test.uuidField == UUID.nil<Test>()) "OK" else "Fail"
+    val test1 = Test()
+    if (test1.uuidField != UUID.nil<Test>()) "Fail"
+
+    val uuid = UUID<Test>()
+    val test2 = Test().apply { uuidField = uuid }
+    if (test2.uuidField != uuid) "Fail"
+
+    return "OK"
 }

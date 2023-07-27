@@ -36,9 +36,6 @@ class SchematicPropertyTransform(
     val fieldIndex : Int
 ) : IrElementTransformerVoidWithContext(), IrBuilder {
 
-    val transformedClass
-        get() = classTransform.transformedClass
-
     lateinit var property: IrProperty
     lateinit var type: IrType
 

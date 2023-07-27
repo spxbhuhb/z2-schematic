@@ -3,23 +3,31 @@
  */
 package hu.simplexion.z2.schematic.kotlin.ir.klass
 
+import hu.simplexion.z2.schematic.kotlin.ir.COMPANION_OBJECT_NAME
 import hu.simplexion.z2.schematic.kotlin.ir.FIELD_CONSTRUCTOR_NAME_INDEX
 import hu.simplexion.z2.schematic.kotlin.ir.FIELD_CONSTRUCTOR_NULLABLE_INDEX
-import hu.simplexion.z2.schematic.kotlin.ir.FIELD_CONSTRUCTOR_VARARG_INDEX
 import hu.simplexion.z2.schematic.kotlin.ir.SchematicPluginContext
 import hu.simplexion.z2.schematic.kotlin.ir.util.IrBuilder
 import hu.simplexion.z2.schematic.kotlin.ir.util.SchematicFunctionType
 import org.jetbrains.kotlin.backend.jvm.ir.receiverAndArgs
+import org.jetbrains.kotlin.ir.backend.js.utils.asString
 import org.jetbrains.kotlin.ir.backend.js.utils.typeArguments
 import org.jetbrains.kotlin.ir.backend.js.utils.valueArguments
+import org.jetbrains.kotlin.ir.declarations.IrClass
 import org.jetbrains.kotlin.ir.declarations.IrProperty
 import org.jetbrains.kotlin.ir.expressions.IrCall
 import org.jetbrains.kotlin.ir.expressions.IrExpression
 import org.jetbrains.kotlin.ir.expressions.IrVarargElement
 import org.jetbrains.kotlin.ir.expressions.impl.IrConstructorCallImpl
 import org.jetbrains.kotlin.ir.types.IrType
+import org.jetbrains.kotlin.ir.types.classFqName
+import org.jetbrains.kotlin.ir.types.getClass
+import org.jetbrains.kotlin.ir.types.isSubtypeOfClass
 import org.jetbrains.kotlin.ir.util.SYNTHETIC_OFFSET
+import org.jetbrains.kotlin.ir.util.companionObject
 import org.jetbrains.kotlin.ir.visitors.IrElementVisitorVoid
+import org.jetbrains.kotlin.name.ClassId
+import org.jetbrains.kotlin.name.Name
 
 /**
  * Analyze the FDF call and the possible DEF calls.
@@ -27,7 +35,6 @@ import org.jetbrains.kotlin.ir.visitors.IrElementVisitorVoid
  */
 class SchematicFieldVisitor(
     override val pluginContext: SchematicPluginContext,
-    val classTransform: SchematicClassTransform,
 ) : IrElementVisitorVoid, IrBuilder {
 
     lateinit var property: IrProperty
@@ -95,6 +102,13 @@ class SchematicFieldVisitor(
         val valueArguments = fdfCall.valueArguments
         val fieldClass = pluginContext.funCache.getFieldClass(fdfCall.symbol)
 
+        val constructorParameterCount = fieldClass.constructor.owner.valueParameters.count()
+
+        val companions = fdfCall.typeArguments
+            .filterNotNull()
+            .filter { it.isSubtypeOfClass(pluginContext.schematicClass) }
+            .map { it.getCompanion() }
+
         schemaField =
             IrConstructorCallImpl(
                 SYNTHETIC_OFFSET, SYNTHETIC_OFFSET,
@@ -102,7 +116,7 @@ class SchematicFieldVisitor(
                 fieldClass.constructor,
                 fdfCall.typeArgumentsCount,
                 0,
-                2 + valueArguments.size // +2 = field name + nullable
+                constructorParameterCount
             ).also { constructorCall ->
 
                 for (index in fdfCall.typeArguments.indices) {
@@ -112,11 +126,31 @@ class SchematicFieldVisitor(
                 constructorCall.putValueArgument(FIELD_CONSTRUCTOR_NAME_INDEX, irConst(property.name.identifier))
                 constructorCall.putValueArgument(FIELD_CONSTRUCTOR_NULLABLE_INDEX, irConst(nullable))
 
+                var index = FIELD_CONSTRUCTOR_NULLABLE_INDEX + 1
+
                 // TODO add a parameter name and type match check to SchemaField builder, should cache it probably
-                for (i in valueArguments.indices) {
-                    constructorCall.putValueArgument(FIELD_CONSTRUCTOR_VARARG_INDEX + i, valueArguments[i])
+                for (valueArgument in valueArguments) {
+                    constructorCall.putValueArgument(index ++, valueArgument)
+                }
+
+                // I feel that this is somewhat hackish, will work, probably.
+                // When the field class does not want the companions they will be simply skipped.
+                for (companion in companions) {
+                    if (index < constructorParameterCount) {
+                        constructorCall.putValueArgument(index ++, irGetObject(companion.symbol))
+                    }
                 }
             }
+    }
+
+    private fun IrType.getCompanion(): IrClass {
+        val companion = getClass()?.companionObject()
+        if (companion != null) return companion
+
+        val typeFqName = checkNotNull(classFqName) { "cannot load companion for ${this.asString()}" }
+        val classId = ClassId(typeFqName.parent(), typeFqName.shortName()).createNestedClassId(Name.identifier(COMPANION_OBJECT_NAME))
+
+        return checkNotNull(pluginContext.irContext.referenceClass(classId)) { "cannot load companion for ${this.asString()}" }.owner
     }
 }
 

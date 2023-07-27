@@ -40,8 +40,7 @@ class SchematicPluginContext(
     val schematicCompanionSchematicSchema = schematicCompanionClass.propertySymbol(SCHEMATIC_SCHEMA_PROPERTY)
     val schematicCompanionEncodeProto = schematicCompanionClass.functionByName(ENCODE_PROTO)
     val schematicCompanionDecodeProto = schematicCompanionClass.functionByName(DECODE_PROTO)
-
-    val schematicAccessContextClass = SCHEMATIC_ACCESS_CONTEXT.runtimeClass(RUNTIME_CONTEXT_PACKAGE).owner
+    val schematicCompanionNewInstance = schematicCompanionClass.functionByName(SCHEMATIC_COMPANION_NEW_INSTANCE)
 
     val mutableMapGet = irContext.irBuiltIns.mutableMapClass.functionByName("get").owner.symbol
 
@@ -51,9 +50,6 @@ class SchematicPluginContext(
 
     val protoMessageType = PROTO_MESSAGE_CLASS.runtimeClass(PROTO_PACKAGE).defaultType
 
-    val protoEncoderClassSymbol = PROTO_ENCODER_CLASS.runtimeClass(PROTO_PACKAGE)
-    val protoDecoderClassSymbol = PROTO_DECODER_CLASS.runtimeClass(PROTO_PACKAGE)
-
     fun String.runtimeClass(pkg: String = RUNTIME_PACKAGE) =
         checkNotNull(irContext.referenceClass(ClassId(FqName(pkg), Name.identifier(this)))) {
             "Missing runtime class: $pkg.$this. Maybe the gradle dependency on \"hu.simplexion.z2:z2-schematic-runtime\" is missing."
@@ -62,4 +58,9 @@ class SchematicPluginContext(
     fun IrClassSymbol.propertySymbol(name : String) =
         owner.properties.first { it.name.identifier == name }.symbol
 
+    @Suppress("UNUSED_PARAMETER")
+    fun debug(label : String, message : () -> Any?) {
+//        val paddedLabel = "[$label]".padEnd(20)
+//        Files.write(Paths.get("/Users/tiz/Desktop/plugin.txt"), "$paddedLabel  ${message()}\n".encodeToByteArray(), StandardOpenOption.APPEND, StandardOpenOption.CREATE)
+    }
 }

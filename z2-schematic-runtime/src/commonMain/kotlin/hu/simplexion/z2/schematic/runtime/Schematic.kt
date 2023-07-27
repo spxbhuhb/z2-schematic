@@ -3,10 +3,7 @@ package hu.simplexion.z2.schematic.runtime
 import hu.simplexion.z2.commons.util.UUID
 import hu.simplexion.z2.schematic.runtime.access.SchematicAccessContext
 import hu.simplexion.z2.schematic.runtime.schema.Schema
-import hu.simplexion.z2.schematic.runtime.schema.field.BooleanSchemaField
-import hu.simplexion.z2.schematic.runtime.schema.field.IntSchemaField
-import hu.simplexion.z2.schematic.runtime.schema.field.StringSchemaField
-import hu.simplexion.z2.schematic.runtime.schema.field.UuidSchemaField
+import hu.simplexion.z2.schematic.runtime.schema.field.*
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
 
@@ -40,14 +37,14 @@ abstract class Schematic<T : Schematic<T>> {
      * Get the schema of this schematic. Returns with the value of
      * `schematicCompanion.schematicSchema`.
      */
-    open val schematicSchema : Schema
-        get() = throw IllegalStateException("Schematic.schematicSchema.get should never be called, most probably the compiler plugin is missing.")
+    open val schematicSchema : Schema<T>
+        get() = placeholder()
 
     /**
      * Get the companion object of this schematic.
      */
     open val schematicCompanion : SchematicCompanion<T>
-        get() = throw IllegalStateException("Schematic.schematicCompanion.get should never be called, most probably the compiler plugin is missing.")
+        get() = placeholder()
 
     // -----------------------------------------------------------------------------------
     // Change management
@@ -162,6 +159,12 @@ abstract class Schematic<T : Schematic<T>> {
     ) = PlaceholderDelegateProvider<T,Int>()
 
     @Suppress("UNUSED_PARAMETER")
+    @FieldDefinitionFunction(SchematicSchemaField::class)
+    fun <V:Schematic<V>> schematic(
+        default: V? = null
+    ) = PlaceholderDelegateProvider<T,V>()
+
+    @Suppress("UNUSED_PARAMETER")
     @FieldDefinitionFunction(StringSchemaField::class)
     fun string(
         default: String? = null,
@@ -185,12 +188,8 @@ abstract class Schematic<T : Schematic<T>> {
     }
 
     class PlaceholderDelegate<T, V> : ReadWriteProperty<T, V> {
-        override fun getValue(thisRef: T, property: KProperty<*>): V {
-            throw IllegalStateException("Schematic.PlaceholderDelegate.getValue should never be called, most probably the compiler plugin is missing.")
-        }
-        override fun setValue(thisRef: T, property: KProperty<*>, value : V) {
-            throw IllegalStateException("Schematic.PlaceholderDelegate.setValue should never be called, most probably the compiler plugin is missing.")
-        }
+        override fun getValue(thisRef: T, property: KProperty<*>): V = placeholder()
+        override fun setValue(thisRef: T, property: KProperty<*>, value : V) = placeholder()
     }
 
     class PlaceholderDelegateProvider<T, V> {

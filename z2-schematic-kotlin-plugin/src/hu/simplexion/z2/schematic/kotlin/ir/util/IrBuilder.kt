@@ -15,10 +15,7 @@ import org.jetbrains.kotlin.ir.builders.irSetField
 import org.jetbrains.kotlin.ir.declarations.*
 import org.jetbrains.kotlin.ir.expressions.*
 import org.jetbrains.kotlin.ir.expressions.impl.*
-import org.jetbrains.kotlin.ir.symbols.IrFunctionSymbol
-import org.jetbrains.kotlin.ir.symbols.IrPropertySymbol
-import org.jetbrains.kotlin.ir.symbols.IrSimpleFunctionSymbol
-import org.jetbrains.kotlin.ir.symbols.IrValueSymbol
+import org.jetbrains.kotlin.ir.symbols.*
 import org.jetbrains.kotlin.ir.symbols.impl.IrValueParameterSymbolImpl
 import org.jetbrains.kotlin.ir.types.IrType
 import org.jetbrains.kotlin.ir.types.impl.IrSimpleTypeImpl
@@ -206,6 +203,13 @@ interface IrBuilder {
     fun irGet(variable: IrValueDeclaration, origin: IrStatementOrigin? = null): IrExpression {
         return irGet(variable.type, variable.symbol, origin)
     }
+
+    fun irGetObject(symbol: IrClassSymbol) = IrGetObjectValueImpl(
+        SYNTHETIC_OFFSET,
+        SYNTHETIC_OFFSET,
+        IrSimpleTypeImpl(symbol, false, emptyList(), emptyList()),
+        symbol
+    )
 
     fun irIf(condition: IrExpression, body: IrExpression): IrExpression {
         return IrIfThenElseImpl(

@@ -2,12 +2,15 @@ package hu.simplexion.z2.schematic.runtime.schema
 
 import hu.simplexion.z2.commons.protobuf.ProtoMessage
 import hu.simplexion.z2.commons.protobuf.ProtoMessageBuilder
+import hu.simplexion.z2.commons.util.PublicApi
 import hu.simplexion.z2.schematic.runtime.Schematic
+import hu.simplexion.z2.schematic.runtime.SchematicCompanion
 import hu.simplexion.z2.schematic.runtime.schema.validation.FieldValidationResult
 import hu.simplexion.z2.schematic.runtime.schema.validation.SchematicValidationResult
 
-class Schema(
-    vararg val fields : SchemaField<*>
+class Schema<T : Schematic<T>>(
+    val companion : SchematicCompanion<T>,
+    vararg val fields : SchemaField<T>
 ) {
 
     /**
@@ -39,6 +42,7 @@ class Schema(
      * Calls the `validateSuspend` function of all fields in the schema on the value
      * that belongs to the field in [schematic].
      */
+    @PublicApi
     suspend fun validateSuspend(schematic : Schematic<*>) : SchematicValidationResult{
         var valid = true
         val fieldResults = mutableMapOf<String,FieldValidationResult>()
@@ -69,6 +73,10 @@ class Schema(
         }
     }
 
+    @PublicApi
+    fun newInstance() : T =
+        companion.newInstance()
+
     fun encodeProto(schematic: Schematic<*>) : ByteArray {
         val builder = ProtoMessageBuilder()
         for (index in fields.indices) {
@@ -83,5 +91,12 @@ class Schema(
             fields[index].decodeProto(schematic, index + 1, message)
         }
         return schematic
+    }
+
+    fun dump(schematic: Schematic<*>, indent : String = "", result : MutableList<String>) : MutableList<String> {
+        for (field in fields) {
+            result += "${indent}FIELD  name=${field.name}  type=${field.type}  value=${schematic.schematicValues[field.name]}"
+        }
+        return result
     }
 }

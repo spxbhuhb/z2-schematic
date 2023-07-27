@@ -28,6 +28,12 @@ public class BoxTestGenerated extends AbstractBoxTest {
     }
 
     @Test
+    @TestMetadata("newInstance.kt")
+    public void testNewInstance() throws Exception {
+        runTest("testData/box/newInstance.kt");
+    }
+
+    @Test
     @TestMetadata("proto.kt")
     public void testProto() throws Exception {
         runTest("testData/box/proto.kt");
@@ -40,8 +46,20 @@ public class BoxTestGenerated extends AbstractBoxTest {
     }
 
     @Test
+    @TestMetadata("schematicField.kt")
+    public void testSchematicField() throws Exception {
+        runTest("testData/box/schematicField.kt");
+    }
+
+    @Test
     @TestMetadata("simple.kt")
     public void testSimple() throws Exception {
         runTest("testData/box/simple.kt");
+    }
+
+    @Test
+    @TestMetadata("typeArgument.kt")
+    public void testTypeArgument() throws Exception {
+        runTest("testData/box/typeArgument.kt");
     }
 }

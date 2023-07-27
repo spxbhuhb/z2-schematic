@@ -8,6 +8,7 @@ import hu.simplexion.z2.schematic.kotlin.ir.klass.SchematicModuleTransform
 import org.jetbrains.kotlin.backend.common.extensions.IrGenerationExtension
 import org.jetbrains.kotlin.backend.common.extensions.IrPluginContext
 import org.jetbrains.kotlin.ir.declarations.IrModuleFragment
+import org.jetbrains.kotlin.ir.util.dump
 
 internal class SchematicGenerationExtension: IrGenerationExtension {
 
@@ -15,9 +16,15 @@ internal class SchematicGenerationExtension: IrGenerationExtension {
 
         SchematicPluginContext(pluginContext).apply {
 
-            moduleFragment.accept(SchematicModuleTransform(this), null)
-            moduleFragment.accept(SchematicAccessTransform(this), null)
+            debug("service") { "".padEnd(80, '=') }
+            debug("schematic") { moduleFragment.dump() }
 
+            SchematicModuleTransform(this).also {
+                moduleFragment.accept(it, null)
+                it.transformFields()
+            }
+
+            moduleFragment.accept(SchematicAccessTransform(this), null)
         }
     }
 }

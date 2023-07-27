@@ -14,13 +14,19 @@ class SchematicModuleTransform(
     private val pluginContext: SchematicPluginContext
 ) : IrElementTransformerVoidWithContext() {
 
+    val classTransforms = mutableListOf<SchematicClassTransform>()
+
     override fun visitClassNew(declaration: IrClass): IrStatement {
 
         if (!declaration.superTypes.contains(pluginContext.schematicClass.typeWith(declaration.defaultType))) {
             return declaration
         }
 
-        return declaration.accept(SchematicClassTransform(pluginContext), null) as IrStatement
+        return declaration.accept(SchematicClassTransform(pluginContext).also { classTransforms += it }, null) as IrStatement
+    }
+
+    fun transformFields() {
+        classTransforms.forEach { it.transformFields() }
     }
 
 }
