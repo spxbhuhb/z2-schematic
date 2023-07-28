@@ -9,20 +9,28 @@ import hu.simplexion.z2.schematic.runtime.schema.validation.ValidationFailInfo
 import hu.simplexion.z2.schematic.runtime.schema.validation.fail
 import hu.simplexion.z2.schematic.runtime.schema.validation.validationStrings
 
-open class StringSchemaField(
+/**
+ * Contains a phone number according to the Extensible Provisioning Protocol.
+ *
+ * https://www.oreilly.com/library/view/regular-expressions-cookbook/9781449327453/ch04s03.html#:~:text=Thanks%20to%20the%20international%20phone,in%20use%20contain%20seven%20digits.
+ *
+ * ```text
+ * +CCC.NNNNNNNNNNNNNNxEEEEE
+ * ```
+ */
+class PhoneNumberSchemaField(
     override val name: String,
     override val nullable: Boolean = false,
-    override val definitionDefault: String?,
-    val minLength: Int?,
-    val maxLength: Int?,
-    val blank : Boolean?,
-    val pattern : Regex?
+    val blank : Boolean? = false
 ) : SchemaField<String> {
 
     override val type: SchemaFieldType
-        get() = SchemaFieldType.String
+        get() = SchemaFieldType.Phone
 
+    override val definitionDefault = ""
     override val naturalDefault = ""
+
+    val phoneRegex = Regex("\\+[0-9]{1,3}.[0-9]{4,14}(x[0-9]{1,5})?")
 
     override fun toTypedValue(anyValue: Any?, fails: MutableList<ValidationFailInfo>): String? {
         if (anyValue == null) return null
@@ -34,12 +42,8 @@ open class StringSchemaField(
     }
 
     override fun validateNotNullable(value: String, fails: MutableList<ValidationFailInfo>) {
-        val length = value.length
-
-        if (minLength != null && length < minLength) fails += fail(validationStrings.minLengthFail, minLength)
-        if (maxLength != null && length > maxLength) fails += fail(validationStrings.maxValueFail, maxLength)
         if (blank == false && value.isBlank()) fails += fail(validationStrings.blankFail)
-        if (pattern != null && !pattern.matches(value)) fails += fail(validationStrings.patternFail)
+        if (value.isNotBlank() && !phoneRegex.matches(value)) fails += fail(validationStrings.patternFail)
     }
 
     override fun encodeProto(schematic: Schematic<*>, fieldNumber: Int, builder: ProtoMessageBuilder) {

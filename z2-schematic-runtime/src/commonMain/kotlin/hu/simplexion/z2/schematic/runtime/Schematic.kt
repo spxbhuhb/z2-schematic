@@ -161,6 +161,12 @@ abstract class Schematic<T : Schematic<T>> {
     ) = PlaceholderDelegateProvider<T,Duration>()
 
     @Suppress("UNUSED_PARAMETER")
+    @FieldDefinitionFunction(EmailSchemaField::class)
+    fun email(
+        blank: Boolean? = false
+    ) = PlaceholderDelegateProvider<T,String>()
+
+    @Suppress("UNUSED_PARAMETER")
     @FieldDefinitionFunction(InstantSchemaField::class)
     fun instant(
         default: Instant? = null
@@ -199,6 +205,22 @@ abstract class Schematic<T : Schematic<T>> {
     fun <V:Schematic<V>> schematic(
         default: V? = null
     ) = PlaceholderDelegateProvider<T,V>()
+
+    @Suppress("UNUSED_PARAMETER")
+    @FieldDefinitionFunction(PhoneNumberSchemaField::class)
+    fun phoneNumber(
+        blank: Boolean? = true
+    ) = PlaceholderDelegateProvider<T,String>()
+
+    @Suppress("UNUSED_PARAMETER")
+    @FieldDefinitionFunction(StringSchemaField::class)
+    fun secret(
+        default: String? = null,
+        minLength: Int? = null,
+        maxLength: Int? = null,
+        blank : Boolean? = null,
+        pattern : Regex? = null
+    ) = PlaceholderDelegateProvider<T,String>()
 
     @Suppress("UNUSED_PARAMETER")
     @FieldDefinitionFunction(StringSchemaField::class)

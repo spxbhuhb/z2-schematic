@@ -8,14 +8,17 @@ class Test : Schematic<Test>() {
 
     var booleanField by boolean()
     var durationField by duration()
+    var emailField by email()
     var instantField by instant()
     var intField by int()
     var localDateField by localDate()
-    val localDateTimeField by localDateTime()
-    val longField by long()
-    val stringField by string()
-    val uuidField by uuid<Test>()
-    val schematicField by schematic<Test>().nullable()
+    var localDateTimeField by localDateTime()
+    var longField by long()
+    var phoneField by phoneNumber()
+    var secretField by secret()
+    var stringField by string()
+    var uuidField by uuid<Test>()
+    var schematicField by schematic<Test>().nullable()
 }
 
 fun box(): String {
