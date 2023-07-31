@@ -12,9 +12,9 @@ import hu.simplexion.z2.schematic.runtime.schema.validation.validationStrings
 
 class UuidSchemaField<T>(
     override val name: String,
-    override val nullable: Boolean = false,
-    override val definitionDefault: UUID<T>? = null,
-    val nil : Boolean = false
+    override val nullable: Boolean,
+    override val definitionDefault: UUID<T>?,
+    val nil : Boolean?
 ) : SchemaField<UUID<T>> {
 
     override val type: SchemaFieldType
@@ -37,7 +37,7 @@ class UuidSchemaField<T>(
     }
 
     override fun validateNotNullable(value: UUID<T>, fails: MutableList<ValidationFailInfo>) {
-        if (! nil && value == UUID.nil<T>()) fails += fail(validationStrings.nilFail)
+        if (nil != true && value == UUID.nil<T>()) fails += fail(validationStrings.nilFail)
     }
 
     override fun encodeProto(schematic: Schematic<*>, fieldNumber: Int, builder: ProtoMessageBuilder) {

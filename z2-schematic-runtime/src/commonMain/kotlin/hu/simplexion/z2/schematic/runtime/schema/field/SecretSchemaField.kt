@@ -4,7 +4,7 @@ import hu.simplexion.z2.schematic.runtime.schema.SchemaFieldType
 
 class SecretSchemaField(
     name: String,
-    nullable: Boolean = false,
+    nullable: Boolean,
     definitionDefault: String?,
     minLength: Int?,
     maxLength: Int?,

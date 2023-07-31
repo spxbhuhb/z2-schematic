@@ -182,10 +182,12 @@ interface IrBuilder {
         value
     )
 
-    fun irNull() = IrConstImpl(
+    fun irNull(
+        type : IrType = irContext.irBuiltIns.anyNType
+    ) = IrConstImpl(
         UNDEFINED_OFFSET,
         UNDEFINED_OFFSET,
-        irContext.irBuiltIns.anyNType,
+        type,
         IrConstKind.Null,
         null
     )

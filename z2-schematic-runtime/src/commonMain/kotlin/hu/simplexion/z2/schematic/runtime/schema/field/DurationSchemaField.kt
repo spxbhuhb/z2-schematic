@@ -13,8 +13,8 @@ import kotlin.time.Duration
 
 class DurationSchemaField(
     override val name: String,
-    override val nullable: Boolean = false,
-    override val definitionDefault: Duration? = null
+    override val nullable: Boolean,
+    override val definitionDefault: Duration?
 ) : SchemaField<Duration> {
 
     override val type: SchemaFieldType

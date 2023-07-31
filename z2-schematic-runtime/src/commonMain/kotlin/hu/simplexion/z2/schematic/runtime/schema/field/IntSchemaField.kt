@@ -11,10 +11,10 @@ import hu.simplexion.z2.schematic.runtime.schema.validation.validationStrings
 
 class IntSchemaField(
     override val name: String,
-    override val nullable: Boolean = false,
-    override val definitionDefault: Int? = null,
-    val min: Int? = null,
-    val max: Int? = null,
+    override val nullable: Boolean,
+    override val definitionDefault: Int?,
+    val min: Int?,
+    val max: Int?
 ) : SchemaField<Int> {
 
     override val type: SchemaFieldType

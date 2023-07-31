@@ -163,7 +163,7 @@ abstract class Schematic<T : Schematic<T>> {
     @Suppress("UNUSED_PARAMETER")
     @FieldDefinitionFunction(EmailSchemaField::class)
     fun email(
-        blank: Boolean? = false
+        blank: Boolean? = null
     ) = PlaceholderDelegateProvider<T,String>()
 
     @Suppress("UNUSED_PARAMETER")
@@ -209,7 +209,7 @@ abstract class Schematic<T : Schematic<T>> {
     @Suppress("UNUSED_PARAMETER")
     @FieldDefinitionFunction(PhoneNumberSchemaField::class)
     fun phoneNumber(
-        blank: Boolean? = true
+        blank: Boolean? = null
     ) = PlaceholderDelegateProvider<T,String>()
 
     @Suppress("UNUSED_PARAMETER")

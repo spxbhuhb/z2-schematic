@@ -12,8 +12,8 @@ import hu.simplexion.z2.schematic.runtime.schema.validation.validationStrings
 
 class SchematicSchemaField<T : Schematic<T>>(
     override val name: String,
-    override val nullable: Boolean = false,
-    override val definitionDefault: T? = null,
+    override val nullable: Boolean,
+    override val definitionDefault: T?,
     val companion: SchematicCompanion<T>
 ) : SchemaField<T> {
 

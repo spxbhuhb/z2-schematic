@@ -13,8 +13,8 @@ import kotlinx.datetime.Instant
 
 class InstantSchemaField(
     override val name: String,
-    override val nullable: Boolean = false,
-    override val definitionDefault: Instant? = null
+    override val nullable: Boolean,
+    override val definitionDefault: Instant?
 ) : SchemaField<Instant> {
 
     override val type: SchemaFieldType

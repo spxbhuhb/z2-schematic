@@ -102,7 +102,8 @@ class SchematicFieldVisitor(
         val valueArguments = fdfCall.valueArguments
         val fieldClass = pluginContext.funCache.getFieldClass(fdfCall.symbol)
 
-        val constructorParameterCount = fieldClass.constructor.owner.valueParameters.count()
+        val constructor = fieldClass.constructor.owner
+        val constructorParameters = constructor.valueParameters
 
         val companions = fdfCall.typeArguments
             .filterNotNull()
@@ -113,10 +114,10 @@ class SchematicFieldVisitor(
             IrConstructorCallImpl(
                 SYNTHETIC_OFFSET, SYNTHETIC_OFFSET,
                 fieldClass.type,
-                fieldClass.constructor,
+                constructor.symbol,
                 fdfCall.typeArgumentsCount,
                 0,
-                constructorParameterCount
+                constructorParameters.size
             ).also { constructorCall ->
 
                 for (index in fdfCall.typeArguments.indices) {
@@ -130,13 +131,19 @@ class SchematicFieldVisitor(
 
                 // TODO add a parameter name and type match check to SchemaField builder, should cache it probably
                 for (valueArgument in valueArguments) {
-                    constructorCall.putValueArgument(index ++, valueArgument)
+                    if (valueArgument != null) {
+                        constructorCall.putValueArgument(index ++, valueArgument)
+                    } else {
+                        constructorCall.putValueArgument(index, irNull(constructorParameters[index].type))
+                        index++
+                    }
                 }
 
+                // This adds the companions for nested schematics.
                 // I feel that this is somewhat hackish, will work, probably.
                 // When the field class does not want the companions they will be simply skipped.
                 for (companion in companions) {
-                    if (index < constructorParameterCount) {
+                    if (index < constructorParameters.size) {
                         constructorCall.putValueArgument(index ++, irGetObject(companion.symbol))
                     }
                 }

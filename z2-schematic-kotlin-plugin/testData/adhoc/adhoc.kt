@@ -4,17 +4,22 @@ import hu.simplexion.z2.schematic.runtime.Schematic
 import hu.simplexion.z2.schematic.runtime.SchematicCompanion
 
 class Test : Schematic<Test>() {
-    var intField by int()
+//    var booleanField by boolean()
+//    var durationField by duration()
+//    var emailField by email()
+//    var instantField by instant()
+//    var intField by int()
+//    var localDateField by localDate()
+//    var localDateTimeField by localDateTime()
+//    var longField by long()
+//    var phoneField by phoneNumber()
+//    var secretField by secret()
+//    var stringField by string()
+//    var uuidField by uuid<Test>()
     var schematicField by schematic<Test>().nullable()
 }
 
 fun box(): String {
     val test = Test()
-    val test2 = Test().also { it.intField = 12 }
-
-    test.schematicField = test2
-
-    if (test.schematicField?.intField != 12) return "Fail"
-
     return "OK"
 }

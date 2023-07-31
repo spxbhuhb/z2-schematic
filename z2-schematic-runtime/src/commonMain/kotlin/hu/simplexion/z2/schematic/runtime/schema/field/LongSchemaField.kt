@@ -11,10 +11,10 @@ import hu.simplexion.z2.schematic.runtime.schema.validation.validationStrings
 
 class LongSchemaField(
     override val name: String,
-    override val nullable: Boolean = false,
-    override val definitionDefault: Long? = null,
-    val min: Long? = null,
-    val max: Long? = null,
+    override val nullable: Boolean,
+    override val definitionDefault: Long?,
+    val min: Long?,
+    val max: Long?
 ) : SchemaField<Long> {
 
     override val type: SchemaFieldType

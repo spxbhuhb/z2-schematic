@@ -11,8 +11,8 @@ import hu.simplexion.z2.schematic.runtime.schema.validation.validationStrings
 
 class EmailSchemaField(
     override val name: String,
-    override val nullable: Boolean = false,
-    val blank : Boolean? = false
+    override val nullable: Boolean,
+    val blank : Boolean?
 ) : SchemaField<String> {
 
     override val type: SchemaFieldType

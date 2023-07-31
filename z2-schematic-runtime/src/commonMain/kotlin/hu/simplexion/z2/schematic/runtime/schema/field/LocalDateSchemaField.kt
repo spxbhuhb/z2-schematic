@@ -13,8 +13,8 @@ import kotlinx.datetime.LocalDate
 
 class LocalDateSchemaField(
     override val name: String,
-    override val nullable: Boolean = false,
-    override val definitionDefault: LocalDate? = null
+    override val nullable: Boolean,
+    override val definitionDefault: LocalDate?
 ) : SchemaField<LocalDate> {
 
     override val type: SchemaFieldType

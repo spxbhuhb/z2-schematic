@@ -11,8 +11,8 @@ import hu.simplexion.z2.schematic.runtime.schema.validation.validationStrings
 
 class BooleanSchemaField(
     override val name: String,
-    override val nullable: Boolean = false,
-    override val definitionDefault: Boolean? = null
+    override val nullable: Boolean,
+    override val definitionDefault: Boolean?
 ) : SchemaField<Boolean> {
 
     override val type: SchemaFieldType

@@ -11,7 +11,7 @@ import hu.simplexion.z2.schematic.runtime.schema.validation.validationStrings
 
 open class StringSchemaField(
     override val name: String,
-    override val nullable: Boolean = false,
+    override val nullable: Boolean,
     override val definitionDefault: String?,
     val minLength: Int?,
     val maxLength: Int?,
