@@ -16,4 +16,7 @@ interface SchematicCompanion<T : Schematic<T>> : ProtoEncoder<T>, ProtoDecoder<T
 
     override fun encodeProto(value: T): ByteArray = placeholder()
 
+    operator fun invoke(builder : T.() -> Unit) : T =
+        newInstance().apply(builder)
+
 }

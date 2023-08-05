@@ -19,6 +19,11 @@ You can think of schematic classes as view models with benefits.
 
 The library has a runtime part and a Kotlin compiler plugin that transforms the code.
 
+## Caveats
+
+* inner classes are not supported
+* field declaration in constructor is not supported
+
 ## Overview
 
 When using schematic we work with:

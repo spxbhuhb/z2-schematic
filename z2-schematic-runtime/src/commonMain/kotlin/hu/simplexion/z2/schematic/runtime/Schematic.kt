@@ -3,6 +3,7 @@ package hu.simplexion.z2.schematic.runtime
 import hu.simplexion.z2.commons.util.UUID
 import hu.simplexion.z2.schematic.runtime.access.SchematicAccessContext
 import hu.simplexion.z2.schematic.runtime.schema.Schema
+import hu.simplexion.z2.schematic.runtime.schema.SchemaField
 import hu.simplexion.z2.schematic.runtime.schema.field.*
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
@@ -50,6 +51,9 @@ abstract class Schematic<T : Schematic<T>> {
     open val schematicCompanion : SchematicCompanion<T>
         get() = placeholder()
 
+    val isValid
+        get() = schematicSchema.validate(this).valid
+
     // -----------------------------------------------------------------------------------
     // Change management
     // -----------------------------------------------------------------------------------
@@ -82,6 +86,14 @@ abstract class Schematic<T : Schematic<T>> {
      */
     fun schematicChange(fieldName : String, fieldIndex : Int, value : Any?) {
         schematicChange(fieldName, schematicSchema.fields[fieldIndex].asChange(value))
+    }
+
+    /**
+     * Creates a [SchematicChange] by calling `SchematicField.asChange` and then
+     * calls [schematicChange] with it.
+     */
+    fun schematicChange(field : SchemaField<*>, value : Any?) {
+        schematicChange(field.name, field.asChange(value))
     }
 
     /**
