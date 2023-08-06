@@ -16,6 +16,7 @@ import org.jetbrains.kotlin.ir.builders.irReturn
 import org.jetbrains.kotlin.ir.declarations.IrDeclarationOrigin
 import org.jetbrains.kotlin.ir.declarations.IrSimpleFunction
 import org.jetbrains.kotlin.ir.expressions.impl.IrConstructorCallImpl
+import org.jetbrains.kotlin.ir.types.makeNullable
 import org.jetbrains.kotlin.ir.util.SYNTHETIC_OFFSET
 import org.jetbrains.kotlin.ir.util.constructors
 import org.jetbrains.kotlin.ir.util.defaultType
@@ -58,7 +59,7 @@ class ProtoDecode(
                 type = companionClass.defaultType
             }
 
-            function.addValueParameter(DECODE_PROTO_MESSAGE_NAME, pluginContext.protoMessageType)
+            function.addValueParameter(DECODE_PROTO_MESSAGE_NAME, pluginContext.protoMessageType.makeNullable())
             function.buildBody()
         }
     }

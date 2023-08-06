@@ -13,7 +13,7 @@ plugins {
 
 group = "hu.simplexion.z2"
 
-val z2_version: String by project
+val z2_commons_version: String by project
 
 val baseName = "z2-schematic-runtime"
 val pomName = "Z2 Schematic Runtime"
@@ -42,7 +42,7 @@ kotlin {
     }
 
     sourceSets["commonMain"].dependencies {
-        api("hu.simplexion.z2:z2-commons:${z2_version}")
+        api("hu.simplexion.z2:z2-commons:${z2_commons_version}")
     }
 
     sourceSets["commonTest"].dependencies {
