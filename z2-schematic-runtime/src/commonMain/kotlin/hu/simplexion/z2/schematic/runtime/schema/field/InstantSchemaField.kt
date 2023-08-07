@@ -9,6 +9,7 @@ import hu.simplexion.z2.schematic.runtime.schema.SchemaFieldType
 import hu.simplexion.z2.schematic.runtime.schema.validation.ValidationFailInfo
 import hu.simplexion.z2.schematic.runtime.schema.validation.fail
 import hu.simplexion.z2.schematic.runtime.schema.validation.validationStrings
+import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 
 class InstantSchemaField(
@@ -20,7 +21,7 @@ class InstantSchemaField(
     override val type: SchemaFieldType
         get() = SchemaFieldType.Instant
 
-    override val naturalDefault = Instant.DISTANT_PAST
+    override val naturalDefault = Clock.System.now()
 
     override fun toTypedValue(anyValue: Any?, fails: MutableList<ValidationFailInfo>): Instant? {
         if (anyValue == null) return null
