@@ -36,19 +36,7 @@ class SchematicClassTransform(
     // used by companion transform to make schema constructor, setFieldValue, getFieldValue
     val fieldVisitors = mutableListOf<SchematicFieldVisitor>()
 
-    /**
-     * Transforms the properties and builds the schemas. Has to run this after all
-     * companions are added.
-     */
-    fun transformFields() {
-        super.visitClassNew(transformedClass)
-        companionTransform.finalize()
-    }
-
-    override fun visitClassNew(declaration: IrClass): IrStatement {
-
-        if (::transformedClass.isInitialized) return declaration
-
+    fun initialize(declaration: IrClass) {
         transformedClass = declaration
         schematicChange = findSchematicChange()
         schematicValuesGetter = checkNotNull(declaration.getPropertyGetter(SCHEMATIC_VALUES_PROPERTY)) { "missing $SCHEMATIC_VALUES_PROPERTY getter " }
@@ -57,8 +45,15 @@ class SchematicClassTransform(
         companionTransform.addOrGetCompanionClass()
 
         addInitializer()
+    }
 
-        return declaration
+    /**
+     * Transforms the properties and builds the schemas. Has to run this after all
+     * companions are added.
+     */
+    fun transformFields() {
+        visitClassNew(transformedClass)
+        companionTransform.finish()
     }
 
     private fun addInitializer() {

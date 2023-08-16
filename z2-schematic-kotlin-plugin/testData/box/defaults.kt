@@ -3,6 +3,11 @@ package foo.bar
 import hu.simplexion.z2.schematic.runtime.Schematic
 import hu.simplexion.z2.commons.util.UUID
 
+enum class E {
+    V1,
+    V2
+}
+
 class A : Schematic<A>() {
     val intField by int(default = 123)
 }
@@ -13,6 +18,9 @@ class Test : Schematic<Test>() {
     val booleanNullDefault by boolean().nullable() // null
     val booleanNullWithDefaultFalse by boolean(default = false).nullable() // false
     val booleanNullWithDefaultTrue by boolean(default = true).nullable() // true
+
+    val enum by enum(E.values())
+    val enumWithDefault by enum(E.values(), default = E.V2)
 
     val int by int()
     val intWithDefault by int(default = 5)
@@ -35,6 +43,9 @@ fun box(): String {
     if (test.booleanNullDefault != null) return "Fail"
     if (test.booleanNullWithDefaultFalse != false) return "Fail"
     if (test.booleanNullWithDefaultTrue != true) return "Fail"
+
+    if (test.enum != E.V1) return "Fail: enum"
+    if (test.enumWithDefault != E.V2) return "Fail: enumWithDefault"
 
     if (test.int != 0) return "Fail"
     if (test.intWithDefault != 5) return "Fail"

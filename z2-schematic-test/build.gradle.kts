@@ -18,7 +18,6 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
-                implementation(kotlin("reflect"))
                 implementation("hu.simplexion.z2:z2-schematic-runtime:${z2_schematic_version}")
             }
         }

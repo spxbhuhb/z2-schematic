@@ -49,7 +49,7 @@ class CompanionTransform(
         ProtoDecode(pluginContext, this).build()
     }
 
-    fun finalize() {
+    fun finish() {
         classTransform.fieldVisitors.forEach { schemaFieldsArg.addElement(it.schemaField) }
         SetFieldValue(pluginContext, this).build()
         GetFieldValue(pluginContext, this).build()

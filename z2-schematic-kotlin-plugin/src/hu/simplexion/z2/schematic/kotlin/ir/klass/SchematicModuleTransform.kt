@@ -18,11 +18,14 @@ class SchematicModuleTransform(
 
     override fun visitClassNew(declaration: IrClass): IrStatement {
 
-        if (!declaration.superTypes.contains(pluginContext.schematicClass.typeWith(declaration.defaultType))) {
-            return declaration
+        if (declaration.superTypes.contains(pluginContext.schematicClass.typeWith(declaration.defaultType))) {
+            SchematicClassTransform(pluginContext).also {
+                it.initialize(declaration)
+                classTransforms += it
+            }
         }
 
-        return declaration.accept(SchematicClassTransform(pluginContext).also { classTransforms += it }, null) as IrStatement
+        return declaration
     }
 
     fun transformFields() {

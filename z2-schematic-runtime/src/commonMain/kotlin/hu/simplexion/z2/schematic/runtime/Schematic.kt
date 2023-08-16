@@ -179,6 +179,15 @@ abstract class Schematic<T : Schematic<T>> {
     ) = PlaceholderDelegateProvider<T,String>()
 
     @Suppress("UNUSED_PARAMETER")
+    @FieldDefinitionFunction(EnumSchemaField::class)
+    fun <E: Enum<E>> enum(
+        // TODO replace with enumEntries when it's available
+        // https://youtrack.jetbrains.com/issue/KT-53154/Deprecate-enumValues-and-replace-it-with-enumEntries-in-standard-library
+        entries : Array<E>,
+        default: E? = null
+    ) = PlaceholderDelegateProvider<T,E>()
+
+    @Suppress("UNUSED_PARAMETER")
     @FieldDefinitionFunction(InstantSchemaField::class)
     fun instant(
         default: Instant? = null

@@ -4,10 +4,16 @@ import hu.simplexion.z2.schematic.runtime.schema.Schema
 import hu.simplexion.z2.schematic.runtime.schema.field.IntSchemaField
 import hu.simplexion.z2.schematic.runtime.Schematic
 
+enum class E {
+    V1,
+    V2
+}
+
 class Test : Schematic<Test>() {
 
     var booleanField by boolean()
     var durationField by duration()
+    var enumField by enum(E.values())
     var emailField by email()
     var instantField by instant()
     var intField by int()
