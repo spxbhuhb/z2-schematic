@@ -11,6 +11,8 @@ const val DEFINITION_TRANSFORM_FUNCTION_CLASS = "DefinitionTransformFunction"
 const val SCHEMATIC_ACCESS_FUNCTION_CLASS = "SchematicAccessFunction"
 const val SCHEMATIC_COMPANION_CLASS = "SchematicCompanion"
 const val COMPANION_OBJECT_NAME = "Companion"
+const val SCHEMA_FIELD_NOT_FOUND_CLASS = "SchemaFieldNotFound"
+const val SCHEMA_FIELD_IS_IMMUTABLE = "SchemaFieldIsImmutable"
 
 const val SCHEMATIC_VALUES_PROPERTY = "schematicValues"
 const val SCHEMATIC_CHANGE = "schematicChange"

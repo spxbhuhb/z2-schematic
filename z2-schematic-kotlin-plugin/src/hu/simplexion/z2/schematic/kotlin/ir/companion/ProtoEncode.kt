@@ -26,11 +26,11 @@ class ProtoEncode(
     override val returnType: IrType
         get() = irBuiltIns.byteArray.defaultType
 
-    override fun IrSimpleFunction.buildBody() {
+    override fun IrSimpleFunction.addParameters() {
+        addValueParameter(ENCODE_PROTO_VALUE_NAME, transformedClass.defaultType)
+    }
 
-        if (! wasFake) {
-            addValueParameter(ENCODE_PROTO_VALUE_NAME, transformedClass.defaultType)
-        }
+    override fun IrSimpleFunction.buildBody() {
 
         body = DeclarationIrBuilder(irContext, this.symbol).irBlockBody {
 

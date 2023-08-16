@@ -28,6 +28,12 @@ public class BoxTestGenerated extends AbstractBoxTest {
     }
 
     @Test
+    @TestMetadata("getAndSet.kt")
+    public void testGetAndSet() throws Exception {
+        runTest("testData/box/getAndSet.kt");
+    }
+
+    @Test
     @TestMetadata("newInstance.kt")
     public void testNewInstance() throws Exception {
         runTest("testData/box/newInstance.kt");

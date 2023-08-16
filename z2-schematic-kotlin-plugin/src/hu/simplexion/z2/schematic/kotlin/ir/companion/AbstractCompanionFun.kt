@@ -23,17 +23,14 @@ import org.jetbrains.kotlin.name.Name
 abstract class AbstractCompanionFun(
     override val pluginContext: SchematicPluginContext,
     companionTransform: CompanionTransform,
-    val funName : String,
-    val funOverridden : IrSimpleFunctionSymbol
+    val funName: String,
+    val funOverridden: IrSimpleFunctionSymbol
 ) : IrBuilder {
 
     val transformedClass = companionTransform.transformedClass
     val companionClass = companionTransform.companionClass
 
-    open val returnType : IrType = transformedClass.defaultType
-
-    var wasFake = false
-
+    open val returnType: IrType = transformedClass.defaultType
 
     fun build() {
         val existing = companionClass.getSimpleFunction(funName)?.owner
@@ -63,15 +60,19 @@ abstract class AbstractCompanionFun(
                 type = companionClass.defaultType
             }
 
+            function.addParameters()
             function.buildBody()
         }
     }
 
     fun transformFake(declaration: IrSimpleFunction) {
-        wasFake = true
         declaration.origin = IrDeclarationOrigin.DEFINED
         declaration.isFakeOverride = false
         declaration.buildBody()
+    }
+
+    open fun IrSimpleFunction.addParameters() {
+
     }
 
     abstract fun IrSimpleFunction.buildBody()

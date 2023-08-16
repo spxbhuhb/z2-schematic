@@ -19,8 +19,8 @@ interface SchematicCompanion<T : Schematic<T>> : ProtoEncoder<T>, ProtoDecoder<T
     operator fun invoke(builder : T.() -> Unit) : T =
         newInstance().apply(builder)
 
-    fun setFieldValue(name : String, value : Any?) : Nothing = placeholder()
+    fun setFieldValue(instance : T, name : String, value : Any?) : Unit = placeholder()
 
-    fun getFieldValue(name : String) : Any? = placeholder()
+    fun getFieldValue(instance : T, name : String) : Any? = placeholder()
 
 }

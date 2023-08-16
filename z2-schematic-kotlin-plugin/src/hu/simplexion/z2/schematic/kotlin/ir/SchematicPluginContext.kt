@@ -28,6 +28,8 @@ class SchematicPluginContext(
     val schemaGetField = checkNotNull(schemaClass.getSimpleFunction("getField")?.owner?.symbol) { "Schema.getField is missing" }
     val schemaEncodeProto = checkNotNull(schemaClass.functionByName(ENCODE_PROTO).owner.symbol)
     val schemaDecodeProto = checkNotNull(schemaClass.functionByName(DECODE_PROTO).owner.symbol)
+    val schemaFieldNotFound = SCHEMA_FIELD_NOT_FOUND_CLASS.runtimeClass(RUNTIME_SCHEMA_PACKAGE).owner.constructors.first().symbol
+    val schemaFieldIsImmutable = SCHEMA_FIELD_IS_IMMUTABLE.runtimeClass(RUNTIME_SCHEMA_PACKAGE).owner.constructors.first().symbol
 
     val fdfAnnotationConstructor = FIELD_DEFINITION_FUNCTION_CLASS.runtimeClass().owner.constructors.first().symbol
     val dtfAnnotationConstructor = DEFINITION_TRANSFORM_FUNCTION_CLASS.runtimeClass().owner.constructors.first().symbol

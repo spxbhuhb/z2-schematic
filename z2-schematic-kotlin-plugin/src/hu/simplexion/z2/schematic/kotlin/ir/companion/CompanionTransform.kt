@@ -23,7 +23,7 @@ class CompanionTransform(
     val transformedClass: IrClass
         get() = classTransform.transformedClass
 
-    lateinit var companionClass : IrClass
+    lateinit var companionClass: IrClass
     lateinit var companionSchematicSchemaGetter: IrFunctionSymbol
 
     /**
@@ -51,8 +51,8 @@ class CompanionTransform(
 
     fun finalize() {
         classTransform.fieldVisitors.forEach { schemaFieldsArg.addElement(it.schemaField) }
-//        SetFieldValue(pluginContext, this).build()
-//        GetFieldValue(pluginContext, this).build()
+        SetFieldValue(pluginContext, this).build()
+        GetFieldValue(pluginContext, this).build()
     }
 
 }

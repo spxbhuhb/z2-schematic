@@ -4,14 +4,13 @@ import hu.simplexion.z2.schematic.kotlin.ir.SCHEMATIC_COMPANION_NAME
 import hu.simplexion.z2.schematic.kotlin.ir.SchematicPluginContext
 import org.jetbrains.kotlin.backend.common.ir.addDispatchReceiver
 import org.jetbrains.kotlin.backend.common.lower.DeclarationIrBuilder
+import org.jetbrains.kotlin.backend.common.lower.irThrow
 import org.jetbrains.kotlin.descriptors.ClassKind
 import org.jetbrains.kotlin.descriptors.DescriptorVisibilities
 import org.jetbrains.kotlin.descriptors.Modality
 import org.jetbrains.kotlin.ir.UNDEFINED_OFFSET
+import org.jetbrains.kotlin.ir.builders.*
 import org.jetbrains.kotlin.ir.builders.declarations.*
-import org.jetbrains.kotlin.ir.builders.irBlockBody
-import org.jetbrains.kotlin.ir.builders.irGet
-import org.jetbrains.kotlin.ir.builders.irSetField
 import org.jetbrains.kotlin.ir.declarations.*
 import org.jetbrains.kotlin.ir.expressions.*
 import org.jetbrains.kotlin.ir.expressions.impl.*
@@ -105,7 +104,7 @@ interface IrBuilder {
             }
 
             it.body = DeclarationIrBuilder(irContext, this.symbol).irBlockBody {
-                +irSetField(
+                + irSetField(
                     receiver = irGet(receiver),
                     field = irField,
                     value = irGet(value)
@@ -117,7 +116,7 @@ interface IrBuilder {
     fun IrProperty.irSetField(value: IrExpression, receiver: IrExpression): IrSetFieldImpl {
         return IrSetFieldImpl(
             SYNTHETIC_OFFSET, SYNTHETIC_OFFSET,
-            backingField!!.symbol,
+            backingField !!.symbol,
             receiver,
             value,
             irBuiltIns.unitType
@@ -127,8 +126,8 @@ interface IrBuilder {
     fun irGetValue(irProperty: IrProperty, receiver: IrExpression?): IrCall =
         IrCallImpl(
             SYNTHETIC_OFFSET, SYNTHETIC_OFFSET,
-            irProperty.backingField!!.type,
-            irProperty.getter!!.symbol,
+            irProperty.backingField !!.type,
+            irProperty.getter !!.symbol,
             0, 0,
             origin = IrStatementOrigin.GET_PROPERTY
         ).apply {
@@ -138,8 +137,8 @@ interface IrBuilder {
     fun irSetValue(irProperty: IrProperty, value: IrExpression, receiver: IrExpression?): IrCall =
         IrCallImpl(
             SYNTHETIC_OFFSET, SYNTHETIC_OFFSET,
-            irProperty.backingField!!.type,
-            irProperty.setter!!.symbol,
+            irProperty.backingField !!.type,
+            irProperty.setter !!.symbol,
             0, 1
         ).apply {
             dispatchReceiver = receiver
@@ -183,7 +182,7 @@ interface IrBuilder {
     )
 
     fun irNull(
-        type : IrType = irContext.irBuiltIns.anyNType
+        type: IrType = irContext.irBuiltIns.anyNType
     ) = IrConstImpl(
         UNDEFINED_OFFSET,
         UNDEFINED_OFFSET,
@@ -429,5 +428,23 @@ interface IrBuilder {
 
     val String.name: Name
         get() = Name.identifier(this)
+
+    fun IrBuilderWithScope.throwSchemaFieldNotFound(irClass: IrClass, fieldName: IrExpression) =
+        irThrow(
+            irCall(pluginContext.schemaFieldNotFound)
+                .also { ctorCall ->
+                    ctorCall.putValueArgument(0, irString(irClass.kotlinFqName.asString()))
+                    ctorCall.putValueArgument(1, fieldName)
+                }
+        )
+
+    fun IrBuilderWithScope.throwSchemaFieldIsImmutable(irClass: IrClass, fieldName: IrExpression) =
+        irThrow(
+            irCall(pluginContext.schemaFieldIsImmutable)
+                .also { ctorCall ->
+                    ctorCall.putValueArgument(0, irString(irClass.kotlinFqName.asString()))
+                    ctorCall.putValueArgument(1, fieldName)
+                }
+        )
 
 }

@@ -25,11 +25,11 @@ class ProtoDecode(
     pluginContext.schematicCompanionDecodeProto
 ) {
 
-    override fun IrSimpleFunction.buildBody() {
+    override fun IrSimpleFunction.addParameters() {
+        addValueParameter(DECODE_PROTO_MESSAGE_NAME, pluginContext.protoMessageType.makeNullable())
+    }
 
-        if (!wasFake) {
-            addValueParameter(DECODE_PROTO_MESSAGE_NAME, pluginContext.protoMessageType.makeNullable())
-        }
+    override fun IrSimpleFunction.buildBody() {
 
         body = DeclarationIrBuilder(irContext, this.symbol).irBlockBody {
 
