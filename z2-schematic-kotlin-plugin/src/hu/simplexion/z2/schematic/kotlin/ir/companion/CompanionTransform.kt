@@ -8,6 +8,7 @@ import hu.simplexion.z2.schematic.kotlin.ir.SchematicPluginContext
 import hu.simplexion.z2.schematic.kotlin.ir.klass.SchematicClassTransform
 import hu.simplexion.z2.schematic.kotlin.ir.util.IrBuilder
 import org.jetbrains.kotlin.ir.declarations.IrClass
+import org.jetbrains.kotlin.ir.expressions.addElement
 import org.jetbrains.kotlin.ir.expressions.impl.IrVarargImpl
 import org.jetbrains.kotlin.ir.symbols.IrFunctionSymbol
 import org.jetbrains.kotlin.ir.types.classFqName
@@ -26,7 +27,8 @@ class CompanionTransform(
     lateinit var companionSchematicSchemaGetter: IrFunctionSymbol
 
     /**
-     * Arguments for the schema that contains the fields. Entries added by [SchematicClassTransform.visitPropertyNew].
+     * Arguments for the schema that contains the fields.
+     * Initialized by [SchematicSchemaProperty].
      */
     lateinit var schemaFieldsArg: IrVarargImpl
 
@@ -45,6 +47,12 @@ class CompanionTransform(
         NewInstance(pluginContext, this).build()
         ProtoEncode(pluginContext, this).build()
         ProtoDecode(pluginContext, this).build()
+    }
+
+    fun finalize() {
+        classTransform.fieldVisitors.forEach { schemaFieldsArg.addElement(it.schemaField) }
+//        SetFieldValue(pluginContext, this).build()
+//        GetFieldValue(pluginContext, this).build()
     }
 
 }

@@ -6,7 +6,7 @@ plugins {
     id("hu.simplexion.z2.schematic") version "2023.7.30-SNAPSHOT"
 }
 
-val z2_version: String by project
+val z2_schematic_version: String by project
 
 repositories {
     mavenLocal()
@@ -18,7 +18,8 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
-                implementation("hu.simplexion.z2:z2-schematic-runtime:${z2_version}")
+                implementation(kotlin("reflect"))
+                implementation("hu.simplexion.z2:z2-schematic-runtime:${z2_schematic_version}")
             }
         }
         val commonTest by getting {

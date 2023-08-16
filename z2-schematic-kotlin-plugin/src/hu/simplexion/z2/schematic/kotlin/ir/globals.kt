@@ -18,8 +18,9 @@ const val SCHEMATIC_SCHEMA_PROPERTY = "schematicSchema"
 const val SCHEMATIC_COMPANION_PROPERTY = "schematicCompanion"
 const val SCHEMATIC_COMPANION_NAME = "Companion"
 const val SCHEMATIC_COMPANION_NEW_INSTANCE = "newInstance"
+const val SCHEMATIC_COMPANION_SET_FIELD_VALUE = "setFieldValue"
+const val SCHEMATIC_COMPANION_GET_FIELD_VALUE = "getFieldValue"
 const val SCHEMATIC_TO_ACCESS_CONTEXT = "toSchematicAccessContext"
-
 
 const val TO_ACCESS_CONTEXT_ARG_COUNT = 2
 const val TO_ACCESS_CONTEXT_SCHEMATIC_INDEX = 1

@@ -14,7 +14,6 @@ import org.jetbrains.kotlin.ir.builders.irGetObject
 import org.jetbrains.kotlin.ir.declarations.IrClass
 import org.jetbrains.kotlin.ir.declarations.IrDeclarationOrigin
 import org.jetbrains.kotlin.ir.declarations.IrProperty
-import org.jetbrains.kotlin.ir.expressions.addElement
 import org.jetbrains.kotlin.ir.symbols.IrFunctionSymbol
 import org.jetbrains.kotlin.ir.symbols.impl.IrAnonymousInitializerSymbolImpl
 import org.jetbrains.kotlin.ir.util.SYNTHETIC_OFFSET
@@ -34,6 +33,18 @@ class SchematicClassTransform(
     // index of the field in `Schema.fields`
     var fieldIndex = 0
 
+    // used by companion transform to make schema constructor, setFieldValue, getFieldValue
+    val fieldVisitors = mutableListOf<SchematicFieldVisitor>()
+
+    /**
+     * Transforms the properties and builds the schemas. Has to run this after all
+     * companions are added.
+     */
+    fun transformFields() {
+        super.visitClassNew(transformedClass)
+        companionTransform.finalize()
+    }
+
     override fun visitClassNew(declaration: IrClass): IrStatement {
 
         if (::transformedClass.isInitialized) return declaration
@@ -48,14 +59,6 @@ class SchematicClassTransform(
         addInitializer()
 
         return declaration
-    }
-
-    /**
-     * Transforms the properties and builds the schemas. Has to run this after all
-     * companions are added.
-     */
-    fun transformFields() {
-        super.visitClassNew(transformedClass)
     }
 
     private fun addInitializer() {
@@ -109,8 +112,9 @@ class SchematicClassTransform(
         }
 
         val fieldVisitor = SchematicFieldVisitor(pluginContext)
+
         declaration.accept(fieldVisitor, null)
-        companionTransform.schemaFieldsArg.addElement(fieldVisitor.schemaField)
+        fieldVisitors += fieldVisitor
 
         return declaration.accept(SchematicPropertyTransform(pluginContext, this, fieldVisitor, fieldIndex++), null) as IrStatement
     }

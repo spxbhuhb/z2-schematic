@@ -41,6 +41,8 @@ class SchematicPluginContext(
     val schematicCompanionEncodeProto = schematicCompanionClass.functionByName(ENCODE_PROTO)
     val schematicCompanionDecodeProto = schematicCompanionClass.functionByName(DECODE_PROTO)
     val schematicCompanionNewInstance = schematicCompanionClass.functionByName(SCHEMATIC_COMPANION_NEW_INSTANCE)
+    val schematicCompanionSetFieldValue = schematicCompanionClass.functionByName(SCHEMATIC_COMPANION_SET_FIELD_VALUE)
+    val schematicCompanionGetFieldValue = schematicCompanionClass.functionByName(SCHEMATIC_COMPANION_GET_FIELD_VALUE)
 
     val mutableMapGet = irContext.irBuiltIns.mutableMapClass.functionByName("get").owner.symbol
 

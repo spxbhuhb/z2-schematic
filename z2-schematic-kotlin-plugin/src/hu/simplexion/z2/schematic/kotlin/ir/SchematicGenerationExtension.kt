@@ -20,7 +20,10 @@ internal class SchematicGenerationExtension: IrGenerationExtension {
             debug("schematic") { moduleFragment.dump() }
 
             SchematicModuleTransform(this).also {
+                // collects classes to transform and creates a SchematicClassTransform for each
+                // does not call any functions in the SchematicClassTransform apart the constructor
                 moduleFragment.accept(it, null)
+                // calls SchematicClassTransform.transformFields for each class transform
                 it.transformFields()
             }
 
