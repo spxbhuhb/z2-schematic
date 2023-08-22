@@ -1,6 +1,8 @@
 package hu.simplexion.z2.schematic.runtime
 
+import hu.simplexion.z2.commons.event.EventCentral
 import hu.simplexion.z2.commons.util.UUID
+import hu.simplexion.z2.commons.util.nextHandle
 import hu.simplexion.z2.schematic.runtime.access.SchematicAccessContext
 import hu.simplexion.z2.schematic.runtime.schema.Schema
 import hu.simplexion.z2.schematic.runtime.schema.SchemaField
@@ -15,28 +17,15 @@ import kotlin.time.Duration
 abstract class Schematic<T : Schematic<T>> {
 
     /**
+     * The unique handle of this schematic instance.
+     */
+    val handle = nextHandle()
+
+    /**
      * The actual values stored in this schematic. Key is the name of the
      * field. Value may be missing if the field is nullable.
      */
     val schematicValues = mutableMapOf<String, Any?>()
-
-    /**
-     * The changes applied to this schematic since the last [schematicCollect].
-     * Key is the name of the field.
-     */
-    var schematicChanges: MutableMap<String, SchematicChange>? = null
-
-    /**
-     * Listeners on this schematic, called after each change. The first
-     * property of the pair is an optional key that can be used to
-     * remove the listener.
-     */
-    var schematicListeners: MutableList<SchematicListenerEntry<T>>? = null
-
-    class SchematicListenerEntry<ST>(
-        val key: Any? = null,
-        val func: SchematicListener<ST>
-    )
 
     /**
      * Get the schema of this schematic. Returns with the value of
@@ -51,6 +40,9 @@ abstract class Schematic<T : Schematic<T>> {
     open val schematicCompanion : SchematicCompanion<T>
         get() = placeholder()
 
+    /**
+     * Validates the schema (calls [Schema.validate]) and returns with the result.
+     */
     val isValid
         get() = schematicSchema.validate(this).valid
 
@@ -60,32 +52,19 @@ abstract class Schematic<T : Schematic<T>> {
 
     /**
      * Change the value of a field.
-     *
-     * - update the value in [schematicValues] (by calling `SchematicChange.patch`)
-     * - adds the change to [schematicChanges]
-     * - calls all listeners from [schematicListeners]
      */
-    fun schematicChange(field: String, change: SchematicChange) {
-        if (schematicChanges == null) schematicChanges = mutableMapOf()
-
-        schematicChanges!![field] = change
-
+    fun schematicChange(field: SchemaField<*>, change: SchematicChange) {
         change.patch(schematicValues)
-
-        schematicListeners?.let {
-            for (listener in it) {
-                @Suppress("UNCHECKED_CAST")
-                listener.func(this as T, change)
-            }
-        }
+        EventCentral.fire(SchematicEvent(handle, this, field))
     }
 
     /**
      * Creates a [SchematicChange] by calling `SchematicField.asChange` and then
      * calls [schematicChange] with it.
      */
-    fun schematicChange(fieldName : String, fieldIndex : Int, value : Any?) {
-        schematicChange(fieldName, schematicSchema.fields[fieldIndex].asChange(value))
+    fun schematicChange(fieldIndex : Int, value : Any?) {
+        val field = schematicSchema.fields[fieldIndex]
+        schematicChange(field, field.asChange(value))
     }
 
     /**
@@ -93,56 +72,7 @@ abstract class Schematic<T : Schematic<T>> {
      * calls [schematicChange] with it.
      */
     fun schematicChange(field : SchemaField<*>, value : Any?) {
-        schematicChange(field.name, field.asChange(value))
-    }
-
-    /**
-     * Get all the changes between the previous collect and this one.
-     * Removes all the changes up until this collect.
-     */
-    fun schematicCollect() : Map<String,SchematicChange> {
-        val c = schematicChanges ?: emptyMap()
-        schematicChanges = null
-        return c
-    }
-
-    /**
-     * Apply all the changes. Calls [schematicChange] for each entry in
-     * the map. This results calling the listeners for each change.
-     */
-    fun schematicPatch(changes: Map<String, SchematicChange>) {
-        for (change in changes) {
-            schematicChange(change.key, change.value)
-        }
-    }
-
-    // -----------------------------------------------------------------------------------
-    // Listeners
-    // -----------------------------------------------------------------------------------
-
-    /**
-     * Adds a listener. This listeners cannot be removed later.
-     */
-    fun schematicAddListener(listener: SchematicListener<T>) {
-        if (schematicListeners == null) schematicListeners = mutableListOf()
-        schematicListeners!! += SchematicListenerEntry(null, listener)
-    }
-
-    /**
-     * Adds a listener with a [key] that identifies the listener. The
-     * listener mey be removed later with [schematicRemoveListener].
-     */
-    fun schematicAddListener(key: Any, listener: SchematicListener<T>) {
-        if (schematicListeners == null) schematicListeners = mutableListOf()
-        schematicListeners!! += SchematicListenerEntry(key, listener)
-    }
-
-    /**
-     * Removes all listeners with the given [key].
-     */
-    fun schematicRemoveListener(key: Any) {
-        if (schematicListeners == null) return
-        schematicListeners!!.removeAll { it.key == key }
+        schematicChange(field, field.asChange(value))
     }
 
     // -----------------------------------------------------------------------------------

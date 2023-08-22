@@ -25,6 +25,7 @@ import org.jetbrains.kotlin.ir.types.getClass
 import org.jetbrains.kotlin.ir.types.isSubtypeOfClass
 import org.jetbrains.kotlin.ir.util.SYNTHETIC_OFFSET
 import org.jetbrains.kotlin.ir.util.companionObject
+import org.jetbrains.kotlin.ir.util.kotlinFqName
 import org.jetbrains.kotlin.ir.visitors.IrElementVisitorVoid
 import org.jetbrains.kotlin.name.ClassId
 import org.jetbrains.kotlin.name.Name
@@ -55,7 +56,7 @@ class SchematicFieldVisitor(
         // it's first argument is the call to the type function (`int`, `string` etc.)
 
         val provideDelegateCall = checkNotNull(backingField.initializer?.expression) { "missing backing field expression" }
-        check(provideDelegateCall is IrCall) { "backing field expression is not a call" }
+        check(provideDelegateCall is IrCall) { "backing field expression is not a call ${property.parent.kotlinFqName}.${property.name}" }
 
         destructCallChain(provideDelegateCall)
         processCallChain()
@@ -69,7 +70,7 @@ class SchematicFieldVisitor(
         //   - a call to an DTF function such as `nullable`
 
         var nextCall: IrExpression? = provideDelegateCall.receiverAndArgs().first()
-        check(nextCall is IrCall) { "delegate provider argument is not a call" }
+        check(nextCall is IrCall) { "delegate provider argument is not a call ${property.parent.kotlinFqName}.${property.name}" }
 
         var currentCall: IrCall = nextCall
         var callType = pluginContext.funCache[currentCall]

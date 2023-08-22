@@ -4,7 +4,6 @@
 package hu.simplexion.z2.schematic.kotlin.ir.klass
 
 import hu.simplexion.z2.schematic.kotlin.ir.SCHEMATIC_CHANGE_FIELD_INDEX_INDEX
-import hu.simplexion.z2.schematic.kotlin.ir.SCHEMATIC_CHANGE_FIELD_NAME_INDEX
 import hu.simplexion.z2.schematic.kotlin.ir.SCHEMATIC_CHANGE_VALUE_INDEX
 import hu.simplexion.z2.schematic.kotlin.ir.SchematicPluginContext
 import hu.simplexion.z2.schematic.kotlin.ir.util.IrBuilder
@@ -135,7 +134,6 @@ class SchematicPropertyTransform(
                 classTransform.schematicChange,
                 dispatchReceiver = irGet(func.dispatchReceiverParameter!!)
             ).apply {
-                putValueArgument(SCHEMATIC_CHANGE_FIELD_NAME_INDEX, irConst(property.name.identifier))
                 putValueArgument(SCHEMATIC_CHANGE_FIELD_INDEX_INDEX, irConst(fieldIndex))
                 putValueArgument(SCHEMATIC_CHANGE_VALUE_INDEX, irGet(func.valueParameters[0]))
             }

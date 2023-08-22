@@ -83,10 +83,9 @@ class SchematicClassTransform(
         checkNotNull(
             transformedClass.functions.firstOrNull {
                 it.name.identifier == SCHEMATIC_CHANGE &&
-                    it.valueParameters.size == 3 &&
-                    it.valueParameters[0].type == irBuiltIns.stringType &&
-                    it.valueParameters[1].type == irBuiltIns.intType &&
-                    it.valueParameters[2].type == irBuiltIns.anyNType
+                    it.valueParameters.size == 2 &&
+                    it.valueParameters[0].type == irBuiltIns.intType &&
+                    it.valueParameters[1].type == irBuiltIns.anyNType
             }?.symbol
         ) { "missing schematicChange function" }
 
